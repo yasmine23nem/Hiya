@@ -8,7 +8,7 @@ export const ShopContext = createContext();
 const ShopContextProvider = (props) => {
   const currency = "€";
   const delivery = 10;
-  const backendUrl = "http://localhost:4000"; // Fallback to localhost if the env variable is not set
+  const backendUrl = "http://localhost"; // Fallback to localhost if the env variable is not set
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(true);
   const [cartItems, setCartItems] = useState([]);

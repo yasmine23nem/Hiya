@@ -11,7 +11,7 @@ export const Login = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { navigate, token, setToken } = useContext(ShopContext);
-  const backendUrl = "http://localhost:4000"; // Fallback to localhost if the env variable is not set
+  const backendUrl = "https://hiyahiya-4.onrender.com"; // Fallback to localhost if the env variable is not set
 
   useEffect(() => {
     if (token) {
