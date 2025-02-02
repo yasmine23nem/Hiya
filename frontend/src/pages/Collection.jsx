@@ -56,7 +56,7 @@ export const Collection = () => {
     applyFilter();
   }, [category, search, showSearch, products, sortType]);
 
-  const categories = ["Boucle d'oreilles", "Bague", "Bracelet", "Sac"];
+  const categories = ["Boucle d'oreilles", "Bague", "Bracelet", "Sac",];
 
   return (
     <div className="flex flex-col sm:flex-row gap-6 pt-10 border-t border-gray-300">

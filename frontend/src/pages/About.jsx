@@ -1,5 +1,4 @@
 import React from "react";
-
 const deliveryData = [
   { destination: "Adrar", delai: "J+7", domicile: 1650, bureau: 850 },
   { destination: "Chlef", delai: "J+1", domicile: 700, bureau: 450 },
@@ -72,8 +71,8 @@ const deliveryDataContinued = [
   { destination: "El M'Ghair", delai: "J+3", domicile: 950, bureau: 500 },
   { destination: "El Meniaa", delai: "J+3", domicile: 950, bureau: 500 },
 ];
-
 const allDeliveryData = [...deliveryData, ...deliveryDataContinued];
+
 const About = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -81,38 +80,42 @@ const About = () => {
         Tarifs de Livraison
       </h2>
 
-      <div className="overflow-x-auto shadow-lg rounded-lg">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-red-800">
+      <div className="overflow-hidden shadow-xl rounded-lg border border-gray-200">
+        <table className="min-w-full bg-white divide-y divide-gray-300">
+          <thead className="bg-red-700/80 text-white rounded-t-lg backdrop-blur-sm">
             <tr>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-white">
+              <th className="px-6 py-4 text-center text-sm font-semibold uppercase tracking-wider">
                 Destination
               </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-white">
+              <th className="px-6 py-4 text-center text-sm font-semibold uppercase tracking-wider">
                 Délai
               </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-white">
+              <th className="px-6 py-4 text-center text-sm font-semibold uppercase tracking-wider">
                 Tarif à Domicile (DA)
               </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-white">
+              <th className="px-6 py-4 text-center text-sm font-semibold uppercase tracking-wider">
                 Tarif au Bureau (DA)
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+
+          <tbody className="divide-y divide-gray-200">
             {allDeliveryData.map((item, index) => (
-              <tr key={index} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <tr
+                key={index}
+                className="hover:bg-red-50 transition duration-300"
+              >
+                <td className="px-6 py-4 text-sm text-gray-900">
                   {item.destination}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <td className="px-6 py-4 text-sm text-gray-600">
                   {item.delai}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {item.domicile} (DA)
+                <td className="px-6 py-4 text-sm text-gray-600">
+                  {item.domicile} DA
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {item.bureau}(DA)
+                <td className="px-6 py-4 text-sm text-gray-600">
+                  {item.bureau} DA
                 </td>
               </tr>
             ))}
@@ -120,7 +123,7 @@ const About = () => {
         </table>
       </div>
 
-      <div className="mt-8 text-center text-sm text-gray-500">
+      <div className="mt-6 text-center text-sm text-gray-500">
         <p>* Les délais sont donnés à titre indicatif</p>
         <p>* Les tarifs sont en Dinars Algériens (DA)</p>
       </div>

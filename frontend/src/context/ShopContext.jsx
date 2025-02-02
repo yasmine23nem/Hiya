@@ -18,7 +18,6 @@ const ShopContextProvider = (props) => {
 
   const addToCart = async (id, quantity) => {
     if (!quantity) {
-      toast.error("Please select a quantity");
       return;
     }
     let cartData = structuredClone(cartItems);
@@ -49,7 +48,6 @@ const ShopContextProvider = (props) => {
         }
       } catch {
         console.error("Error adding product to cart");
-        toast.error("Error adding product to cart");
       }
     }
   };
@@ -89,7 +87,6 @@ const ShopContextProvider = (props) => {
       }
     } catch {
       console.error("Error fetching cart items");
-      toast.error("Error fetching cart items");
     }
   };
 
@@ -136,7 +133,6 @@ const ShopContextProvider = (props) => {
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
-      toast.error("Error fetching products");
     }
   };
 
@@ -148,7 +144,6 @@ const ShopContextProvider = (props) => {
     if (!token && localStorage.getItem("token")) {
       setToken(localStorage.getItem("token"));
       navigate("/");
-      toast.success("Token received!");
       getUserCart(localStorage.getItem("token"));
     }
   }, []);

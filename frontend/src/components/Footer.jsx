@@ -9,32 +9,33 @@ export const Footer = () => {
           {/* Section 1: Logo & Description */}
           <div>
             <img src={assets.logo} className="mb-5 w-32" alt="Logo" />
-            <p className="text-gray-600">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel fugit
-              nulla inventore nesciunt voluptatum libero facilis deleniti
-              minima. Repellat sit adipisci temporibus iure quasi, quis tempora
-              velit magni et veritatis.
-            </p>
+            <p className="text-gray-600"></p>
           </div>
 
           {/* Section 2: Company Links */}
-          <div>
-            <p className="text-xl font-semibold mb-5">COMPANY</p>
-            <ul className="space-y-2 text-gray-600">
-              <li className="hover:text-rose-600 cursor-pointer">Home</li>
-              <li className="hover:text-rose-600 cursor-pointer">About us</li>
-              <li className="hover:text-rose-600 cursor-pointer">Delivery</li>
-              <li className="hover:text-rose-600 cursor-pointer">
-                Privacy Policy
-              </li>
-            </ul>
-          </div>
 
           {/* Section 3: Follow Us */}
           <div>
             <p className="text-xl font-semibold mb-5">FOLLOW US</p>
             <ul className="space-y-2 text-gray-600">
-              <li className="hover:text-rose-600 cursor-pointer">Instagram</li>
+              <li className="flex items-center gap-2">
+                <a
+                  href="https://www.instagram.com/hiya_mode_?igsh=aTM3YmJibDI1dm5r"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-rose-600 cursor-pointer"
+                >
+                  Instagram
+                </a>
+              </li>
+              <li className="flex items-center gap-2">
+                <a
+                  href="mailto:Hiyamode.contact@gmail.com"
+                  className="hover:text-gray-800 cursor-pointer"
+                >
+                  Hiyamode.contact@gmail.com
+                </a>
+              </li>
             </ul>
           </div>
         </div>

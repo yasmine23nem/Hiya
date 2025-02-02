@@ -1,123 +1,102 @@
-import React from "react";
-import { use } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
-import { useState } from "react";
-import { useEffect } from "react";
 import { RelatedProducts } from "../components/RelatedProducts";
 
 export const Product = () => {
   const { productId } = useParams();
-
-  const { products, currency, addToCart } = useContext(ShopContext);
-  const [productData, setProductData] = useState(false);
+  const { products, addToCart } = useContext(ShopContext);
+  const [productData, setProductData] = useState(null);
   const [image, setImage] = useState("");
   const [quantity, setQuantity] = useState(1);
 
-  const fetchProductData = async () => {
-    products.map((item) => {
-      if (item._id === productId) {
-        setProductData(item);
-        setImage(item.image[0]);
-        return null;
-      }
-    });
-  };
   useEffect(() => {
-    fetchProductData();
+    const product = products.find((item) => item._id === productId);
+    if (product) {
+      setProductData(product);
+      setImage(product.image[0]);
+    }
   }, [productId, products]);
 
-  return productData ? (
-    <div className="border-t-2 pt10 transition-opacity ease-in duration-500 opacity-100">
-      {/* product data */}
-      <div className="flex gap-12 sm:gap-12 flex-col sm:flex:row">
-        {/* image */}
-        <div className="flex-1 flex flex-col-reverse gap-3 sm:flex:row">
-          <div className="flex sm:flex-col overflow-autp sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full ">
+  if (!productData) return <div className="opacity-0">No product found</div>;
+
+  return (
+    <div className="border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100 px-4 md:px-10">
+      {/* Product Container */}
+      <div className="flex flex-col md:flex-row gap-10">
+        {/* Image Gallery */}
+        <div className="flex md:w-1/2 flex-col md:flex-row gap-3">
+          <div className="flex md:flex-col overflow-x-auto md:overflow-y-auto md:w-1/5 gap-2">
             {productData.image.map((item, index) => (
               <img
                 src={item}
                 key={index}
                 alt="product"
-                className="w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer"
+                className="w-16 md:w-full md:mb-2 cursor-pointer border rounded-md hover:border-gray-400"
+                onClick={() => setImage(item)}
               />
             ))}
           </div>
-          {/* product image */}
-          <div className="w-full sm:w-[80%]">
-            <img src={image} alt="product" className="w-full" />
-          </div>
-          {/* product details */}
-          <div className="flex-1">
-            <h1 className="font-medium text-2xl mt-2">{productData.name}</h1>
-            <div className="flex items-center gap-1 mt-2">
-              <img src="" alt="" className="w-3 5" />
-              <img src="" alt="" className="w-3 5" />
-              <img src="" alt="" className="w-3 5" />
-              <img src="" alt="" className="w-3 5" />
-              <img src="" alt="" className="w-3 5" />
-              <p className="pl-2"> </p>
-            </div>
-            <p className="text-2xl font-semibold mt-5">
-              {productData.currency} {productData.price}
-            </p>
-            <p className="mt-5 text-gray-500 md:w-4/5">
-              {productData.description}
-            </p>
-            {/* Sélection de quantité */}
-            <div className="flex flex-col gap-4 my-8">
-              <label htmlFor="quantity" className="font-medium">
-                Sélectionner la quantité :
-              </label>
-              <input
-                type="number"
-                id="quantity"
-                className="border px-4 py-2 w-20"
-                value={quantity}
-                min={1}
-                onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-              />
-            </div>
-            <button
-              onClick={() => addToCart(productData._id, quantity)}
-              className="bg-black text-white px-8 py-3  text-sm active:bg-pink-700"
-            >
-              Ajouter au panier
-            </button>
-            <hr className="mt-8 sm:w-4/5" />
-            <div className="text-sm text-gray-500 mt-5 flex flex-col gap-1">
-              <p>Produit original</p>
-            </div>
+          <div className="w-full md:w-4/5">
+            <img
+              src={image}
+              alt="product"
+              className="w-full h-auto rounded-lg shadow-md"
+            />
           </div>
         </div>
+
+        {/* Product Details */}
+        <div className="flex-1 space-y-4">
+          <h1 className="text-3xl font-bold">{productData.name}</h1>
+          <p className="text-2xl font-semibold text-gray-800">
+            {productData.currency} {productData.price}
+          </p>
+          <p className="text-gray-600">{productData.description}</p>
+
+          {/* Quantity Selector */}
+          <div className="flex items-center gap-4">
+            <label htmlFor="quantity" className="font-medium">
+              Quantité:
+            </label>
+            <input
+              type="number"
+              id="quantity"
+              className="border px-4 py-2 w-16 rounded-md"
+              value={quantity}
+              min={1}
+              onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+            />
+          </div>
+
+          {/* Add to Cart Button */}
+          <button
+            onClick={() => addToCart(productData._id, quantity)}
+            className="bg-black text-white px-6 py-3 text-sm rounded-md shadow-md hover:bg-gray-800 transition-all"
+          >
+            Ajouter au panier
+          </button>
+
+          <hr className="mt-6" />
+          <p className="text-sm text-gray-500">Produit original</p>
+        </div>
       </div>
-      {/* review */}
+
+      {/* Description & Comments Section */}
       <div className="mt-20">
-        <div className="flex">
-          <b className="border px-5 py-6 text-sm">Description</b>
-          <p className="border px-5 py-6 text-sm ">Commentaires</p>
+        <div className="flex border-b">
+          <button className="border px-5 py-3 text-sm font-semibold">
+            Description
+          </button>
+          <button className="border px-5 py-3 text-sm">Commentaires</button>
         </div>
-        <div className="flex flex-col gap-4 border px-6 py-6 text-sm text-gray-500">
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam,
-            explicabo et laudantium quasi, unde nisi iste illum fugiat, error
-            blanditiis necessitatibus quia voluptatem modi dignissimos saepe
-            minus. Obcaecati, officiis perferendis.
-          </p>
-          <p>
-            {" "}
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis,
-            consequatur! Inventore dolores facere quam dolorem sint aut
-            cupiditate vel placeat omnis iste eius atque quod, autem sequi ut
-            aspernatur quidem?
-          </p>
+        <div className="border px-6 py-6 text-sm text-gray-500">
+          <p></p>
         </div>
       </div>
-      {/* related products */}
-      <RelatedProducts category={productData.category}></RelatedProducts>
+
+      {/* Related Products */}
+      <RelatedProducts category={productData.category} />
     </div>
-  ) : (
-    <div className="opacity-0">noooooo</div>
   );
 };

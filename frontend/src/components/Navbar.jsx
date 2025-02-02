@@ -3,11 +3,12 @@ import { NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { Link } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
-import { Search, User, ShoppingCart, Menu, X } from "lucide-react";
+import { Search, User, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
 
 export const Navbar = ({ hidden }) => {
   const [visible, setVisible] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [collectionMenuVisible, setCollectionMenuVisible] = useState(false);
   const {
     setShowSearch,
     getCartCount,
@@ -33,11 +34,11 @@ export const Navbar = ({ hidden }) => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 bg-white shadow-sm w-full transition-transform duration-300 ${
+      className={`sticky top-0 z-50 bg-white shadow-md w-full transition-transform duration-300 ${
         hidden ? "-translate-y-full" : "translate-y-0"
       }`}
     >
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="transition-transform hover:scale-105">
           <img
@@ -48,39 +49,30 @@ export const Navbar = ({ hidden }) => {
         </Link>
 
         {/* Desktop Navigation */}
-        <ul className="hidden md:flex space-x-8 items-center">
+        <ul className="hidden md:flex space-x-8 items-center font-medium">
           {navLinks.map((link) => (
             <li key={link.to}>
               <NavLink
                 to={link.to}
                 className={({ isActive }) =>
-                  `relative group text-rose-600 hover:text-rose-800 
-                    transition-colors duration-300 
-                    ${isActive ? "text-rose-900 font-semibold" : ""}`
+                  `relative group text-gray-700 hover:text-rose-600 transition-colors duration-300 ${
+                    isActive ? "text-rose-900 font-semibold" : ""
+                  }`
                 }
               >
-                {({ isActive }) => (
-                  <>
-                    {link.label}
-                    <span
-                      className={`absolute bottom-[-4px] left-0 h-0.5 bg-rose-800 
-                          transition-all duration-300
-                          ${isActive ? "w-full" : "w-0"}
-                          group-hover:w-full`}
-                    ></span>
-                  </>
-                )}
+                {link.label}
+                <span className="absolute bottom-[-4px] left-0 h-0.5 bg-rose-600 transition-all duration-300 group-hover:w-full"></span>
               </NavLink>
             </li>
           ))}
         </ul>
 
         {/* Icons and Buttons */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-6">
           {/* Search Icon */}
           <button
             onClick={() => setShowSearch(true)}
-            className="text-rose-600 hover:text-rose-800 transition-colors"
+            className="text-gray-700 hover:text-rose-600 transition-colors"
           >
             <Search className="w-5 h-5" />
           </button>
@@ -88,67 +80,63 @@ export const Navbar = ({ hidden }) => {
           {/* User Icon */}
           <div className="relative">
             <button
-              onClick={() => {
-                if (!token) {
-                  navigate("/login");
-                } else {
-                  setDropdownVisible(!dropdownVisible);
-                }
-              }}
-              className="text-rose-600 hover:text-rose-800"
+              onClick={() =>
+                token
+                  ? setDropdownVisible(!dropdownVisible)
+                  : navigate("/login")
+              }
+              className="text-gray-700 hover:text-rose-600"
             >
               <User className="w-5 h-5" />
             </button>
             {dropdownVisible && token && (
-              <div
-                className="absolute right-0 mt-2 w-40 
-                  bg-white shadow-lg rounded-md border border-gray-200
-                  transition-all duration-300 ease-in-out"
-              >
-                <div className="py-2">
-                  <p
-                    onClick={() => navigate("/profile")}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm text-rose-800"
-                  >
-                    Mon profil
-                  </p>
-                  <p
-                    onClick={() => navigate("/orders")}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm text-rose-800"
-                  >
-                    Commandes
-                  </p>
-                  <p
-                    onClick={logout}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm text-rose-800"
-                  >
-                    Déconnexion
-                  </p>
-                </div>
+              <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md border border-gray-200">
+                <p
+                  onClick={() => navigate("/profile")}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm text-gray-800"
+                >
+                  Mon profil
+                </p>
+                <p
+                  onClick={() => navigate("/orders")}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm text-gray-800"
+                >
+                  Commandes
+                </p>
+                <p
+                  onClick={logout}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm text-gray-800"
+                >
+                  Déconnexion
+                </p>
               </div>
             )}
           </div>
 
           {/* Cart Icon */}
-          <Link to="/cart" className="relative group">
-            <ShoppingCart className="w-5 h-5 text-rose-600 hover:text-rose-800" />
+          <Link to="/cart" className="relative">
+            <ShoppingCart className="w-5 h-5 text-gray-700 hover:text-rose-600" />
             {getCartCount() > 0 && (
-              <span
-                className="absolute -top-2 -right-2 
-                  bg-rose-600 text-white 
-                  rounded-full w-4 h-4 
-                  flex items-center justify-center 
-                  text-[10px] font-bold"
-              >
+              <span className="absolute -top-2 -right-2 bg-rose-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
                 {getCartCount()}
               </span>
             )}
           </Link>
 
+          {/* CTA Button */}
+          {!token && (
+            <Link
+              to="/register"
+              className="bg-rose-600 text-white px-4 py-2 rounded-md shadow-md hover:bg-rose-700 transition"
+            >
+              S'inscrire
+            </Link>
+          )}
+
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setVisible(!visible)}
-            className="md:hidden text-rose-600"
+            className="md:hidden text-gray-700"
           >
             {visible ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -157,32 +145,26 @@ export const Navbar = ({ hidden }) => {
 
       {/* Mobile Menu */}
       <div
-        className={`fixed inset-y-0 right-0 w-64 bg-white shadow-lg 
-          transform transition-transform duration-300 
-          ${visible ? "translate-x-0" : "translate-x-full"}
-          md:hidden z-50`}
+        className={`fixed inset-y-0 right-0 w-64 bg-white shadow-lg transform transition-transform duration-300 ${
+          visible ? "translate-x-0" : "translate-x-full"
+        } md:hidden z-50`}
       >
         <div className="p-4">
           <button
             onClick={() => setVisible(false)}
-            className="mb-4 text-rose-600 hover:text-rose-800 flex items-center"
+            className="mb-4 text-gray-700 hover:text-rose-600 flex items-center"
           >
             <X className="w-6 h-6 mr-2" /> Fermer
           </button>
-
           {navLinks.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
               onClick={() => setVisible(false)}
               className={({ isActive }) =>
-                `block py-3 border-b border-gray-200
-                  ${
-                    isActive
-                      ? "bg-gray-100 text-rose-900"
-                      : "text-rose-800 hover:bg-gray-100"
-                  }
-                  transition-colors`
+                `block py-3 border-b border-gray-200 text-gray-700 hover:bg-gray-100 ${
+                  isActive ? "bg-gray-100 text-rose-900" : "hover:text-rose-600"
+                }`
               }
             >
               {link.label}

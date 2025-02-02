@@ -44,7 +44,6 @@ export const Cart = () => {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching cart:", error);
-        setError(error.message);
         setLoading(false);
       }
     };
