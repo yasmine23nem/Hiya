@@ -11,7 +11,7 @@ export const Login = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { navigate, token, setToken } = useContext(ShopContext);
-  const backendUrl = "https://hiyahiya-4.onrender.com"; // Fallback to localhost if the env variable is not set
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     if (token) {

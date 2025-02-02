@@ -5,7 +5,7 @@ import axios from "axios";
 import { Title } from "../components/Title";
 import { assets } from "../assets/assets";
 import { CardTotal } from "../components/CardTotal";
-const backendUrl = "https://hiyahiya-4.onrender.com"; // Fallback to localhost if the env variable is not set
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export const Cart = () => {
   const { products, currency, updateQuantity, navigate } =
