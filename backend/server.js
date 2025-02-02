@@ -20,6 +20,10 @@ connectCloudinary();
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+    res.send('Backend fonctionne 🚀');
+});
+
 // Routes
 app.use('/api/user', userRouter);
 app.use('/api/product', productRouter);
