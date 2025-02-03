@@ -97,27 +97,35 @@ const ShopContextProvider = (props) => {
         return 0;
       }
 
-      const decoded = JSON.parse(atob(token.split(".")[1]));
-      const userId = decoded.id;
-      console.log("👤 ID de l'utilisateur :", userId);
-
-      // Récupération du panier de l'utilisateur depuis l'API
-      const res = await axios.get(
-        `${backendUrl}/api/cart/get/${userId}`, // Use the variable here
-        {
-          headers: { token },
-        }
-      );
-      console.log("🛒 Données du panier :", res.data);
-      if (!res.data.success || !res.data.cartData) {
-        console.warn("Aucune donnée de panier trouvée !");
-        return 0;
+      // Vérifier si nous avons des produits
+      if (products.length === 0) {
+        await getProductsData();
       }
 
-      const cartData = res.data.cartData;
+      let totalAmount = 0;
 
-      // Affichage du montant total dans la console
-      console.log(`💰 Montant total du panier : ${totalAmount} €`);
+      // Parcourir le cartItems directement
+      Object.entries(cartItems).forEach(([productId, quantities]) => {
+        // Trouver le produit correspondant dans la liste des produits
+        const product = products.find((p) => p._id === productId);
+
+        if (product) {
+          // Parcourir les quantités pour chaque taille
+          Object.entries(quantities).forEach(([size, quantity]) => {
+            // Multiplier le prix par la quantité et l'ajouter au total
+            totalAmount += product.price * quantity;
+          });
+        }
+      });
+
+      // Arrondir à 2 décimales
+      totalAmount = Math.round(totalAmount * 100) / 100;
+
+      console.log("🧮 Détail du calcul :", {
+        cartItems,
+        products,
+        totalAmount,
+      });
 
       return totalAmount;
     } catch (error) {
