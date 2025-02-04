@@ -6,13 +6,17 @@ import { SlideItem } from "../assets/data";
 
 const Container = styled.div`
   width: 100%;
-  height: 70vh; // Reduced height for the slider
+  height: 70vh;
   display: flex;
   position: relative;
   overflow: hidden;
-  border: 1px solid #800020; // Bordeaux border for the container
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Optional: shadow for a better effect
-  border-radius: 5px; // Optional: rounded corners for the container
+  border: 1px solid #800020;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+
+  @media (max-width: 768px) {
+    height: 50vh;
+  }
 `;
 
 const Arrow = styled.div`
@@ -45,50 +49,129 @@ const Wrapper = styled.div`
 
 const Slide = styled.div`
   width: 100vw;
-  height: 100%; // Adjusted to fit the container height
+  height: 100%;
   display: flex;
-  align-items: center; // Center items vertically
-  justify-content: center; // Center items horizontally
-  position: relative;
+  align-items: center;
 `;
 
 const ImageContainer = styled.div`
-  width: 70vh; // Increased size for the square
-  height: 65vh; // Increased size for the square
+  width: 50%;
+  height: 100%;
   background: url(${(props) => props.bg}) center/cover no-repeat;
-  border-radius: 10px; // Optional: rounded corners
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Optional: shadow for images
-  margin-right: 20px; // Add margin to the right to separate from the text
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 `;
 
 const InfoContainer = styled.div`
+  width: 50%;
   display: flex;
   flex-direction: column;
-  align-items: center; // Center text horizontally
-  justify-content: center; // Center text vertically
-  text-align: center; // Center text content
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   padding: 20px;
-  color: white; // Ensure text color is white for better visibility
+  color: white;
 `;
 
 const Title = styled.h1`
-  font-size: 50px; // Title font size
-  font-weight: bold;
+  font-size: 60px;
+  font-weight: 800;
   text-transform: uppercase;
-  margin-bottom: 20px; // Title margin bottom
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-  font-family: "Playfair Display", serif; // Elegant font family
-  color: #d4af37; // Gold color for the title
+  margin-bottom: 30px;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+  font-family: "Playfair Display", serif;
+  color: #f5f5dc;
+  letter-spacing: 3px;
+  line-height: 1.2;
+  padding: 0 20px;
+
+  animation: fadeInDown 1s ease-out;
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    font-size: 36px;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 28px;
+    letter-spacing: 1px;
+  }
 `;
 
 const Description = styled.p`
-  margin: 20px 0; // Description margin
-  font-size: 20px; // Description font size
-  font-weight: 500;
-  letter-spacing: 2px;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
-  font-family: "Playfair Display", serif; // Elegant font family
-  color: #800020; // Bordeaux color for the description
+  margin: 30px 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  font-family: "Playfair Display", serif;
+  color: #800020;
+  line-height: 1.6;
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  padding: 20px;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    height: 3px;
+    width: 60px;
+    background-color: #800020;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &::before {
+    top: 0;
+  }
+
+  &::after {
+    bottom: 0;
+  }
+
+  animation: fadeIn 1.2s ease-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+    letter-spacing: 1.5px;
+    max-width: 90%;
+    padding: 15px;
+
+    &::before,
+    &::after {
+      width: 40px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+    letter-spacing: 1px;
+    line-height: 1.4;
+  }
 `;
 
 const SquareSlider = () => {
