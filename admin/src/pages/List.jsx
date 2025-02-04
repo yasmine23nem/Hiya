@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { Switch } from "@headlessui/react";
 import { MdDelete, MdEdit, MdCheck, MdClose } from "react-icons/md";
 
-const backendUrl = "http://localhost:8000/api/product";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const List = ({ token }) => {
   const [list, setList] = useState([]);
@@ -15,7 +15,7 @@ const List = ({ token }) => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/list`);
+      const response = await axios.get(`${backendUrl}/api/product/list`);
       setList(response.data);
     } catch (error) {
       toast.error("Erreur lors du chargement des produits");
@@ -28,7 +28,7 @@ const List = ({ token }) => {
     setUpdating(productId);
     try {
       await axios.patch(
-        `${backendUrl}/${productId}/toggle-active`,
+        `${backendUrl}/api/product/${productId}/toggle-active`,
         { active: !currentStatus },
         { headers: { token } }
       );
@@ -53,7 +53,7 @@ const List = ({ token }) => {
 
   const confirmDelete = async () => {
     try {
-      await axios.delete(`${backendUrl}/${selectedProduct._id}`, {
+      await axios.delete(`${backendUrl}/api/product/${selectedProduct._id}`, {
         headers: { token },
       });
       setList(list.filter((item) => item._id !== selectedProduct._id));

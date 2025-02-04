@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const backendUrl = "http://localhost:8000/api/product";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Add = ({ token }) => {
   const [loading, setLoading] = useState(false);
@@ -56,11 +56,15 @@ const Add = ({ token }) => {
 
       submitData.append("countInStock", 10);
 
-      const response = await axios.post(`${backendUrl}/create`, submitData, {
-        headers: {
-          token,
-        },
-      });
+      const response = await axios.post(
+        `${backendUrl}/api/product/create`,
+        submitData,
+        {
+          headers: {
+            token,
+          },
+        }
+      );
 
       if (response.data) {
         toast.success("Produit ajouté avec succès");
