@@ -18,6 +18,7 @@ export const Contact = () => {
           <div className="text-gray-600">
             <p className="mt-2">
               <span className="font-semibold">Téléphone:</span>
+              +33 6 18 43 55 27
             </p>
             <p className="mt-2">
               <span className="font-semibold">Email:</span>{" "}

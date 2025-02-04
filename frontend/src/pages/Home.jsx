@@ -4,10 +4,11 @@ import { LastestCollection } from "../components/LastestCollection";
 import { BestSeller } from "../components/BestSeller";
 import { OurPolicy } from "../components/OurPolicy";
 import Slider from "../components/Slider";
+import SquareSlider from "../components/SquareSlider";
 export const Home = () => {
   return (
     <div>
-      <Slider></Slider>
+      <SquareSlider></SquareSlider>
       <LastestCollection />
       <BestSeller />
     </div>
