@@ -48,15 +48,14 @@ export const Navbar = ({ hidden }) => {
           />
         </Link>
 
-        {/* Desktop Navigation */}
         <ul className="hidden md:flex space-x-8 items-center font-medium">
           {navLinks.map((link) => (
             <li key={link.to}>
               <NavLink
                 to={link.to}
                 className={({ isActive }) =>
-                  `relative group text-gray-700 hover:text-rose-600 transition-colors duration-300 ${
-                    isActive ? "text-rose-900 font-semibold" : ""
+                  `relative group text-rose-600 transition-colors duration-300 ${
+                    isActive ? "font-semibold" : ""
                   }`
                 }
               >

@@ -3,13 +3,14 @@ import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import e from "../assets/e.jpg";
 import vid3 from "../assets/vid3.mp4";
-import i from "../assets/i.jpg";
+import i2 from "../assets/i2.jpg";
 import l from "../assets/l.jpg";
 import ka from "../assets/ka.jpg";
+import val from "../assets/val.jpg";
 
 const products = [
   {
-    image: e,
+    image: i2,
     type: "image",
   },
   {
@@ -21,7 +22,7 @@ const products = [
     type: "image",
   },
   {
-    image: i,
+    image: val,
     type: "image",
   },
   {
