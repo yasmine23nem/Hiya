@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import ArrowRight from "@mui/icons-material/ArrowRight";
 import ArrowLeft from "@mui/icons-material/ArrowLeft";
 import { SlideItem } from "../assets/data";
-
 const Container = styled.div`
   width: 100%;
   height: 85vh;
@@ -25,28 +24,25 @@ const Container = styled.div`
 `;
 
 const Arrow = styled.div`
-  width: 55px;
-  height: 55px;
-  background-color: rgba(225, 29, 72, 0.1);
-  border: 2px solid rgba(225, 29, 72, 0.2);
+  width: 50px;
+  height: 50px;
+  background-color: rgba(212, 165, 165, 0.5);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   position: absolute;
   top: 50%;
-  transform: translateY(-50%) scale(0.9);
+  transform: translateY(-50%);
   left: ${(props) => (props.direction === "left" ? "20px" : "unset")};
   right: ${(props) => (props.direction === "right" ? "20px" : "unset")};
   cursor: pointer;
   z-index: 2;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(4px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    transform: translateY(-50%) scale(1);
-    background-color: rgba(225, 29, 72, 0.2);
-    border-color: rgba(225, 29, 72, 0.3);
+    background-color: rgba(212, 165, 165, 0.8);
+    transform: translateY(-50%) scale(1.1);
   }
 `;
 
@@ -68,8 +64,10 @@ const Slide = styled.div`
     index === 0
       ? "linear-gradient(135deg, #E11D48 20%, #ea6058 60%, #f8f0f2 100%)"
       : "#ffffff"};
-  transform: scale(${({ active }) => (active ? "1" : "0.95")});
+  transform: scale(${({ active }) => (active ? "1" : "0.92")});
+  filter: brightness(${({ active }) => (active ? "100%" : "95%")});
 `;
+// ...rest of the code remains unchanged
 
 const ImageContainer = styled.div`
   width: 50%;
@@ -113,9 +111,6 @@ const InfoContainer = styled.div`
   text-align: center;
   padding: 40px;
   color: ${({ index }) => (index === 0 ? "#ffffff" : "#4a4a4a")};
-  opacity: 0;
-  transform: translateY(20px);
-  animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 `;
 
 const Title = styled.h1`
@@ -123,9 +118,12 @@ const Title = styled.h1`
   font-family: "Pinyon Script", cursive;
   color: ${({ color }) => color};
   margin-bottom: 30px;
+  opacity: 0;
+  transform: translateY(30px) rotate(-3deg);
+  animation: slideUp 1s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.2s;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 1px;
   position: relative;
-  transform: translateY(30px);
-  animation: titleReveal 1s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.2s;
 
   &::after {
     content: "";
@@ -133,36 +131,28 @@ const Title = styled.h1`
     bottom: -10px;
     left: 50%;
     transform: translateX(-50%);
-    width: 0;
+    width: 60%;
     height: 2px;
     background: currentColor;
     opacity: 0.3;
-    animation: lineReveal 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards 1s;
   }
 
-  @keyframes titleReveal {
+  @keyframes slideUp {
     to {
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes lineReveal {
-    to {
-      width: 60%;
+      opacity: 1;
+      transform: translateY(0) rotate(0);
     }
   }
 `;
 
 const Description = styled.p`
-  font-size: clamp(18px, 2.2vw, 26px);
+  font-size: clamp(16px, 2vw, 24px);
   font-family: "Playfair Display", serif;
-  line-height: 1.8;
-  max-width: 75%;
+  line-height: 1.6;
+  max-width: 80%;
   opacity: 0;
   transform: translateY(20px);
-  animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.6s;
-  font-weight: 300;
-  letter-spacing: 0.5px;
+  animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.4s;
 
   @keyframes fadeIn {
     to {
@@ -183,18 +173,18 @@ const Dots = styled.div`
 `;
 
 const Dot = styled.div`
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   background-color: ${({ active }) =>
-    active ? "#E11D48" : "rgba(225, 29, 72, 0.2)"};
+    active ? "#d4a5a5" : "rgba(212, 165, 165, 0.3)"};
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform: scale(${({ active }) => (active ? "1.2" : "1")});
 
   &:hover {
-    transform: scale(1.3);
-    background-color: rgba(225, 29, 72, 0.8);
+    transform: scale(1.2);
+    background-color: #d4a5a5;
   }
 `;
 
@@ -219,13 +209,17 @@ const SquareSlider = () => {
   return (
     <Container>
       <Arrow direction="left" onClick={() => handleClick("left")}>
-        <ArrowLeft style={{ color: "#E11D48" }} />
+        <ArrowLeft style={{ color: "white" }} />
       </Arrow>
       <Wrapper slideIndex={slideIndex}>
         {SlideItem.map((item, index) => (
           <Slide key={item.id} active={index === slideIndex} index={index}>
             <InfoContainer index={index}>
-              <Title color={index === 0 ? "#ffffff" : "#E11D48"}>
+              <Title
+                color={
+                  index === 0 ? "#ffffff" : index === 1 ? "#A02334" : "#4a4a4a"
+                }
+              >
                 {item.title}
               </Title>
               <Description>{item.desc}</Description>
@@ -239,7 +233,7 @@ const SquareSlider = () => {
         ))}
       </Wrapper>
       <Arrow direction="right" onClick={() => handleClick("right")}>
-        <ArrowRight style={{ color: "#E11D48" }} />
+        <ArrowRight style={{ color: "white" }} />
       </Arrow>
       <Dots>
         {SlideItem.map((_, index) => (
