@@ -217,7 +217,7 @@ const SquareSlider = () => {
             <InfoContainer index={index}>
               <Title
                 color={
-                  index === 0 ? "#ffffff" : index === 1 ? "#A02334" : "#4a4a4a"
+                  index === 0 ? "#ffffe" : index === 1 ? "#A02334" : "#4a4a4a"
                 }
               >
                 {item.title}
