@@ -1,8 +1,10 @@
+// Imports remain the same
 import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import ArrowRight from "@mui/icons-material/ArrowRight";
 import ArrowLeft from "@mui/icons-material/ArrowLeft";
 import { SlideItem } from "../assets/data";
+
 const Container = styled.div`
   width: 100%;
   height: 85vh;
@@ -10,13 +12,7 @@ const Container = styled.div`
   position: relative;
   overflow: hidden;
   background-color: #f8f0f2;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   transition: all 0.5s ease;
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-  }
 
   @media (max-width: 768px) {
     height: 60vh;
@@ -26,7 +22,7 @@ const Container = styled.div`
 const Arrow = styled.div`
   width: 50px;
   height: 50px;
-  background-color: rgba(212, 165, 165, 0.5);
+  background-color: rgba(225, 29, 72, 0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -41,7 +37,7 @@ const Arrow = styled.div`
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    background-color: rgba(212, 165, 165, 0.8);
+    background-color: rgba(225, 29, 72, 0.4);
     transform: translateY(-50%) scale(1.1);
   }
 `;
@@ -60,14 +56,9 @@ const Slide = styled.div`
   align-items: center;
   opacity: ${({ active }) => (active ? "1" : "0")};
   transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-  background: ${({ index }) =>
-    index === 0
-      ? "linear-gradient(135deg, #E11D48 20%, #ea6058 60%, #f8f0f2 100%)"
-      : "#ffffff"};
+  background: linear-gradient(135deg, #e11d48 20%, #ea6058 60%, #f8f0f2 100%);
   transform: scale(${({ active }) => (active ? "1" : "0.92")});
-  filter: brightness(${({ active }) => (active ? "100%" : "95%")});
 `;
-// ...rest of the code remains unchanged
 
 const ImageContainer = styled.div`
   width: 50%;
@@ -110,13 +101,13 @@ const InfoContainer = styled.div`
   justify-content: center;
   text-align: center;
   padding: 40px;
-  color: ${({ index }) => (index === 0 ? "#ffffff" : "#4a4a4a")};
+  color: #ffffff;
 `;
 
 const Title = styled.h1`
   font-size: clamp(50px, 6vw, 80px);
   font-family: "Pinyon Script", cursive;
-  color: ${({ color }) => color};
+  color: #ffffff;
   margin-bottom: 30px;
   opacity: 0;
   transform: translateY(30px) rotate(-3deg);
@@ -153,6 +144,7 @@ const Description = styled.p`
   opacity: 0;
   transform: translateY(20px);
   animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.4s;
+  color: #ffffff;
 
   @keyframes fadeIn {
     to {
@@ -176,7 +168,7 @@ const Dot = styled.div`
   width: 10px;
   height: 10px;
   background-color: ${({ active }) =>
-    active ? "#d4a5a5" : "rgba(212, 165, 165, 0.3)"};
+    active ? "#ffffff" : "rgba(255, 255, 255, 0.3)"};
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -184,10 +176,11 @@ const Dot = styled.div`
 
   &:hover {
     transform: scale(1.2);
-    background-color: #d4a5a5;
+    background-color: #ffffff;
   }
 `;
 
+// Component logic remains the same
 const SquareSlider = () => {
   const [slideIndex, setSlideIndex] = useState(0);
 
@@ -209,19 +202,13 @@ const SquareSlider = () => {
   return (
     <Container>
       <Arrow direction="left" onClick={() => handleClick("left")}>
-        <ArrowLeft style={{ color: "white" }} />
+        <ArrowLeft style={{ color: "#ffffff" }} />
       </Arrow>
       <Wrapper slideIndex={slideIndex}>
         {SlideItem.map((item, index) => (
           <Slide key={item.id} active={index === slideIndex} index={index}>
-            <InfoContainer index={index}>
-              <Title
-                color={
-                  index === 0 ? "#ffffe" : index === 1 ? "#A02334" : "#4a4a4a"
-                }
-              >
-                {item.title}
-              </Title>
+            <InfoContainer>
+              <Title>{item.title}</Title>
               <Description>{item.desc}</Description>
             </InfoContainer>
             {item.type === "video" ? (
@@ -233,7 +220,7 @@ const SquareSlider = () => {
         ))}
       </Wrapper>
       <Arrow direction="right" onClick={() => handleClick("right")}>
-        <ArrowRight style={{ color: "white" }} />
+        <ArrowRight style={{ color: "#ffffff" }} />
       </Arrow>
       <Dots>
         {SlideItem.map((_, index) => (

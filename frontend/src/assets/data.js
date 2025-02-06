@@ -5,9 +5,9 @@ import i1 from '../assets/i1.jpg';
 import d from '../assets/d.jpg';
 import rouge from '../assets/rouge.png';
 import ww from '../assets/ww.png';
-import p from '../assets/p.png';
 import fs from '../assets/fs.png';
 import vid2 from '../assets/vid2.mp4';
+import rem from '../assets/rem.png';
 
 export const SlideItem = [
     {
@@ -27,10 +27,9 @@ export const SlideItem = [
 
     {
         id: 7,
-        img: vid2,
+        img: rem,
         title: "هي",
         desc: "هي رمز القوة,أناقة",
         bg: "ffffff", // White background
-        type: "video", // Indicate that this is a video
     },
 ];

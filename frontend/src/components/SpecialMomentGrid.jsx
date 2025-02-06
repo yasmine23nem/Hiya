@@ -3,9 +3,9 @@ import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import e from "../assets/e.jpg";
 import vid3 from "../assets/vid3.mp4";
-import h from "../assets/h.jpg";
 import i from "../assets/i.jpg";
 import l from "../assets/l.jpg";
+import ka from "../assets/ka.jpg";
 
 const products = [
   {
@@ -20,7 +20,7 @@ const products = [
   },
   {
     title: "",
-    image: h,
+    image: ka,
     type: "image",
   },
   {

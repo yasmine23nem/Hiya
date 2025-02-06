@@ -4,12 +4,11 @@ import cart from '../assets/icart.png'
 import accournt from '../assets/account.png'
 import menu from '../assets/menu.png'
 import dropdown from '../assets/dropdown.png'
-import hero from '../assets/hero.jpg'
 import echange from '../assets/echange.png'
 import cross from '../assets/cross.png'
 
 
-export const assets = { logo, search, cart, accournt, menu, dropdown, hero, echange, cross }
+export const assets = { logo, search, cart, accournt, menu, dropdown, echange, cross }
 export const products = [
     {
         _id: '1bbb',
