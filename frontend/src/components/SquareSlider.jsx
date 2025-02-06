@@ -10,9 +10,7 @@ const Container = styled.div`
   display: flex;
   position: relative;
   overflow: hidden;
-  background-color: #ea6058; /* Valentine's Day theme */
-  border-radius: 5px;
-  border: 1px solid #800020; /* 1px border */
+  background-color: #f8f0f2; /* Soft pink background */
 
   @media (max-width: 768px) {
     height: 50vh;
@@ -22,7 +20,7 @@ const Container = styled.div`
 const Arrow = styled.div`
   width: 50px;
   height: 50px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(212, 165, 165, 0.5); /* Soft rose background */
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -36,7 +34,7 @@ const Arrow = styled.div`
   z-index: 2;
   transition: background 0.3s;
   &:hover {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(212, 165, 165, 0.8);
   }
 `;
 
@@ -55,21 +53,27 @@ const Slide = styled.div`
   opacity: 0;
   transition: opacity 1s ease-in-out;
   ${({ active }) => active && "opacity: 1;"}
-  background-color: #${(props) => props.bg};
+  background: ${({ index }) =>
+    index === 0
+      ? "linear-gradient(135deg, #A02334 0%, #ea6058 50%, #f8f0f2 100%)"
+      : `#${(props) => props.bg}`};
 `;
 
 const ImageContainer = styled.div`
   width: 50%;
   height: 100%;
   background: url(${(props) => props.bg}) center/cover no-repeat;
-  border-radius: 10px;
+  border-radius: 0;
 `;
 
 const VideoContainer = styled.video`
   width: 50%;
   height: 100%;
-  border-radius: 10px;
+  border-radius: 0;
+  object-fit: cover;
 `;
+
+// ...existing code...
 
 const InfoContainer = styled.div`
   width: 50%;
@@ -79,7 +83,7 @@ const InfoContainer = styled.div`
   justify-content: center;
   text-align: center;
   padding: 20px;
-  color: white;
+  color: #4a4a4a; /* Dark gray text color */
 `;
 
 const Title = styled.h1`
@@ -87,7 +91,7 @@ const Title = styled.h1`
   font-weight: 800;
   text-transform: uppercase;
   margin-bottom: 20px;
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
   font-family: "Playfair Display", serif;
   color: ${({ color }) => color};
   letter-spacing: 3px;
@@ -114,13 +118,12 @@ const Description = styled.p`
   margin: 20px 0;
   font-size: 24px;
   font-weight: 600;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
   font-family: "Playfair Display", serif;
-  color: white;
+  color: #4a4a4a; /* Dark gray text color */
   line-height: 1.6;
   max-width: 80%;
   animation: fadeIn 1.2s ease-out;
-  border: ${({ isLast }) => (isLast ? "1px solid white" : "none")};
 
   @media (max-width: 768px) {
     font-size: 18px;
@@ -141,17 +144,19 @@ const Button = styled.button`
   padding: 12px 24px;
   font-size: 18px;
   font-weight: bold;
-  background: #800020;
+  background: #d4a5a5; /* Soft rose background */
   color: white;
   border: none;
   cursor: pointer;
   text-transform: uppercase;
   transition: background 0.3s;
   font-family: "Playfair Display", serif;
+  border-radius: 5px;
 
   &:hover {
     background: white;
-    color: #800020;
+    color: #d4a5a5;
+    border: 1px solid #d4a5a5;
   }
 `;
 
@@ -167,7 +172,7 @@ const Dots = styled.div`
 const Dot = styled.div`
   width: 12px;
   height: 12px;
-  background-color: ${({ active }) => (active ? "#800020" : "#ccc")};
+  background-color: ${({ active }) => (active ? "#d4a5a5" : "#ccc")};
   border-radius: 50%;
   cursor: pointer;
   transition: background 0.3s;
@@ -198,14 +203,21 @@ const SquareSlider = () => {
       </Arrow>
       <Wrapper slideIndex={slideIndex}>
         {SlideItem.map((item, index) => (
-          <Slide key={item.id} active={index === slideIndex} bg={item.bg}>
+          <Slide
+            key={item.id}
+            active={index === slideIndex}
+            index={index}
+            bg={item.bg}
+          >
             <InfoContainer>
-              <Title color={index === 0 ? "white" : index === 1 ? "#A02334" : "white"}>
+              <Title
+                color={
+                  index === 0 ? "white" : index === 1 ? "#A02334" : "#4a4a4a"
+                }
+              >
                 {item.title}
               </Title>
-              <Description isLast={index === SlideItem.length - 1 || index === SlideItem.length - 2}>
-                {item.desc}
-              </Description>
+              <Description>{item.desc}</Description>
             </InfoContainer>
             {item.type === "video" ? (
               <VideoContainer src={item.img} autoPlay loop muted />
