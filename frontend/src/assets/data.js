@@ -8,6 +8,7 @@ import ww from '../assets/ww.png';
 import fs from '../assets/fs.png';
 import vid2 from '../assets/vid2.mp4';
 import rem from '../assets/rem.png';
+import yy from '../assets/yy.png';
 
 export const SlideItem = [
     {
@@ -19,7 +20,7 @@ export const SlideItem = [
     },
     {
         id: 2,
-        img: ww,
+        img: yy,
         title: "Hiya",
         desc: "Un nom simple,mais puissant, qui raconte une histoire unique",
         bg: "ffffff", // White background

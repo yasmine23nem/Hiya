@@ -5,7 +5,7 @@ import vid3 from "../assets/vid3.mp4";
 import i2 from "../assets/i2.jpg";
 import l from "../assets/l.jpg";
 import ka from "../assets/ka.jpg";
-import val from "../assets/val.jpg";
+import valo from "../assets/valo.png";
 
 const products = [
   {
@@ -21,7 +21,7 @@ const products = [
     type: "image",
   },
   {
-    image: val,
+    image: valo,
     type: "image",
   },
   {
