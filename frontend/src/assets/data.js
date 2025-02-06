@@ -15,7 +15,7 @@ export const SlideItem = [
         img: rouge,
         title: "Elle",
         desc: "Elle est le langage du cœur, dans chaque battement et chaque lettre",
-        bg: "A02334", // Red background
+        bg: "E11D48", // Red background
     },
     {
         id: 2,
