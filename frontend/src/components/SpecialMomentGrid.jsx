@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import e from "../assets/e.jpg";
 import vid3 from "../assets/vid3.mp4";
 import i2 from "../assets/i2.jpg";
 import l from "../assets/l.jpg";
