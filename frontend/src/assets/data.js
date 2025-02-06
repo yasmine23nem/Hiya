@@ -13,14 +13,14 @@ export const SlideItem = [
     {
         id: 1,
         img: rouge,
-        title: "elle",
+        title: "Elle",
         desc: "Elle est le langage du cœur, dans chaque battement et chaque lettre",
         bg: "A02334", // Red background
     },
     {
         id: 2,
         img: ww,
-        title: "hiya",
+        title: "Hiya",
         desc: "Un nom simple,mais puissant, qui raconte une histoire unique",
         bg: "ffffff", // White background
     },

@@ -1,5 +1,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Prata&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Italianno&family=Pinyon+Script&family=Prata&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -24,4 +26,20 @@ a.active hr {
 
     }
   }
+  .elegant-script {
+    font-family: 'Pinyon Script', cursive;
+    font-weight: 400;
+}
   
+.great-vibes {
+  font-family: 'Great Vibes', cursive;
+  font-weight: 400;
+}
+.italianno {
+  font-family: 'Italianno', cursive;
+  font-weight: 400;
+}
+
+::-webkit-scrollbar{
+  display: none;
+}

@@ -6,21 +6,21 @@ import { SlideItem } from "../assets/data";
 
 const Container = styled.div`
   width: 100%;
-  height: 70vh;
+  height: 80vh;
   display: flex;
   position: relative;
   overflow: hidden;
-  background-color: #f8f0f2; /* Soft pink background */
+  background-color: #f8f0f2;
 
   @media (max-width: 768px) {
-    height: 50vh;
+    height: 60vh;
   }
 `;
 
 const Arrow = styled.div`
   width: 50px;
   height: 50px;
-  background-color: rgba(212, 165, 165, 0.5); /* Soft rose background */
+  background-color: rgba(212, 165, 165, 0.5);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -28,13 +28,15 @@ const Arrow = styled.div`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  left: ${(props) => (props.direction === "left" ? "10px" : "unset")};
-  right: ${(props) => (props.direction === "right" ? "10px" : "unset")};
+  left: ${(props) => (props.direction === "left" ? "20px" : "unset")};
+  right: ${(props) => (props.direction === "right" ? "20px" : "unset")};
   cursor: pointer;
   z-index: 2;
-  transition: background 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
   &:hover {
     background-color: rgba(212, 165, 165, 0.8);
+    transform: translateY(-50%) scale(1.1);
   }
 `;
 
@@ -42,7 +44,7 @@ const Wrapper = styled.div`
   height: 100%;
   display: flex;
   transform: translateX(${(props) => props.slideIndex * -100}vw);
-  transition: transform 1s ease-in-out;
+  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 `;
 
 const Slide = styled.div`
@@ -50,30 +52,47 @@ const Slide = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
-  ${({ active }) => active && "opacity: 1;"}
+  opacity: ${({ active }) => (active ? "1" : "0")};
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
   background: ${({ index }) =>
     index === 0
       ? "linear-gradient(135deg, #A02334 0%, #ea6058 50%, #f8f0f2 100%)"
-      : `#${(props) => props.bg}`};
+      : "#ffffff"};
+  transform: scale(${({ active }) => (active ? "1" : "0.95")});
 `;
 
 const ImageContainer = styled.div`
   width: 50%;
   height: 100%;
-  background: url(${(props) => props.bg}) center/cover no-repeat;
-  border-radius: 0;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url(${(props) => props.bg}) center/cover no-repeat;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover::before {
+    transform: scale(1.05);
+  }
 `;
 
 const VideoContainer = styled.video`
   width: 50%;
   height: 100%;
-  border-radius: 0;
   object-fit: cover;
-`;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 
-// ...existing code...
+  &:hover {
+    transform: scale(1.05);
+  }
+`;
 
 const InfoContainer = styled.div`
   width: 50%;
@@ -82,31 +101,20 @@ const InfoContainer = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 20px;
-  color: #4a4a4a; /* Dark gray text color */
+  padding: 40px;
+  color: ${({ index }) => (index === 0 ? "#ffffff" : "#4a4a4a")};
 `;
 
 const Title = styled.h1`
-  font-size: 60px;
-  font-weight: 800;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
-  font-family: "Playfair Display", serif;
+  font-size: clamp(40px, 5vw, 70px);
+  font-family: "Pinyon Script", cursive;
   color: ${({ color }) => color};
-  letter-spacing: 3px;
-  line-height: 1.2;
-  animation: fadeInDown 1s ease-out;
+  margin-bottom: 30px;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.2s;
 
-  @media (max-width: 768px) {
-    font-size: 36px;
-  }
-
-  @keyframes fadeInDown {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
+  @keyframes slideUp {
     to {
       opacity: 1;
       transform: translateY(0);
@@ -115,67 +123,46 @@ const Title = styled.h1`
 `;
 
 const Description = styled.p`
-  margin: 20px 0;
-  font-size: 24px;
-  font-weight: 600;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: clamp(16px, 2vw, 24px);
   font-family: "Playfair Display", serif;
-  color: #4a4a4a; /* Dark gray text color */
   line-height: 1.6;
   max-width: 80%;
-  animation: fadeIn 1.2s ease-out;
-
-  @media (max-width: 768px) {
-    font-size: 18px;
-  }
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.4s;
 
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
     to {
       opacity: 1;
+      transform: translateY(0);
     }
-  }
-`;
-
-const Button = styled.button`
-  margin-top: 15px;
-  padding: 12px 24px;
-  font-size: 18px;
-  font-weight: bold;
-  background: #d4a5a5; /* Soft rose background */
-  color: white;
-  border: none;
-  cursor: pointer;
-  text-transform: uppercase;
-  transition: background 0.3s;
-  font-family: "Playfair Display", serif;
-  border-radius: 5px;
-
-  &:hover {
-    background: white;
-    color: #d4a5a5;
-    border: 1px solid #d4a5a5;
   }
 `;
 
 const Dots = styled.div`
   position: absolute;
-  bottom: 10px;
+  bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 8px;
+  gap: 12px;
+  z-index: 2;
 `;
 
 const Dot = styled.div`
-  width: 12px;
-  height: 12px;
-  background-color: ${({ active }) => (active ? "#d4a5a5" : "#ccc")};
+  width: 10px;
+  height: 10px;
+  background-color: ${({ active }) =>
+    active ? "#d4a5a5" : "rgba(212, 165, 165, 0.3)"};
   border-radius: 50%;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(${({ active }) => (active ? "1.2" : "1")});
+
+  &:hover {
+    transform: scale(1.2);
+    background-color: #d4a5a5;
+  }
 `;
 
 const SquareSlider = () => {
@@ -203,16 +190,11 @@ const SquareSlider = () => {
       </Arrow>
       <Wrapper slideIndex={slideIndex}>
         {SlideItem.map((item, index) => (
-          <Slide
-            key={item.id}
-            active={index === slideIndex}
-            index={index}
-            bg={item.bg}
-          >
-            <InfoContainer>
+          <Slide key={item.id} active={index === slideIndex} index={index}>
+            <InfoContainer index={index}>
               <Title
                 color={
-                  index === 0 ? "white" : index === 1 ? "#A02334" : "#4a4a4a"
+                  index === 0 ? "#ffffff" : index === 1 ? "#A02334" : "#4a4a4a"
                 }
               >
                 {item.title}
