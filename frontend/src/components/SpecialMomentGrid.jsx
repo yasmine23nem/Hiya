@@ -5,23 +5,21 @@ import vid3 from "../assets/vid3.mp4";
 import i2 from "../assets/i2.jpg";
 import l from "../assets/l.jpg";
 import ka from "../assets/ka.jpg";
+import val from "../assets/val.jpg";
 import valo from "../assets/valo.png";
 
 const products = [
   {
-    image: i2,
-    type: "image",
-  },
-  {
     image: vid3,
     type: "video",
   },
+
   {
-    image: ka,
+    image: val,
     type: "image",
   },
   {
-    image: valo,
+    image: ka,
     type: "image",
   },
   {
