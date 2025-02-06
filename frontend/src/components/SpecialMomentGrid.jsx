@@ -1,0 +1,122 @@
+import React, { useEffect } from "react";
+import { motion, useAnimation } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import e from "../assets/e.jpg";
+import vid3 from "../assets/vid3.mp4";
+import h from "../assets/h.jpg";
+import i from "../assets/i.jpg";
+import l from "../assets/l.jpg";
+
+const products = [
+  {
+    title: "Elegance et raffinement",
+    image: e,
+    type: "image",
+  },
+  {
+    title: "    ",
+    image: vid3,
+    type: "video",
+  },
+  {
+    title: "",
+    image: h,
+    type: "image",
+  },
+  {
+    title: "Bague en forme de cœur ",
+    image: i,
+    type: "image",
+  },
+  {
+    title: "Un cadeau élégant pour elle",
+    image: l,
+    type: "image",
+  },
+];
+
+const SpecialMomentGrid = () => {
+  return (
+    <div className="container mx-auto px-6 py-12">
+      {/* Titre à gauche */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+        <div className="md:col-span-1">
+          <h1 className="text-5xl font-bold text-gray-900">
+            Pour des <br /> moments spéciaux
+          </h1>
+        </div>
+
+        {/* Grille des images */}
+        <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4">
+          {products.map((product, index) => (
+            <GridItem key={index} product={product} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const GridItem = ({ product }) => {
+  const imageControls = useAnimation();
+  const textControls = useAnimation();
+  const [ref, inView] = useInView({
+    triggerOnce: false,
+    threshold: 0.1,
+  });
+
+  useEffect(() => {
+    if (inView) {
+      imageControls.start({
+        opacity: 1,
+        scale: 1,
+        transition: { duration: 0.5 },
+      });
+      textControls.start({
+        opacity: 1,
+        scale: 1,
+        transition: { duration: 0.5 },
+      });
+    } else {
+      imageControls.start({ opacity: 0, scale: 0.75 });
+      textControls.start({ opacity: 0, scale: 0.75 });
+    }
+  }, [imageControls, textControls, inView]);
+
+  return (
+    <motion.div
+      ref={ref}
+      className="relative group overflow-hidden shadow-lg cursor-pointer"
+      initial={{ opacity: 0, scale: 0.75 }}
+      animate={imageControls}
+    >
+      {/* Image or Video with animation */}
+      {product.type === "image" ? (
+        <img
+          src={product.image}
+          alt={product.title}
+          className="w-full h-72 object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      ) : (
+        <video
+          src={product.image}
+          autoPlay
+          loop
+          muted
+          className="w-full h-72 object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      )}
+
+      {/* Titre avec animation */}
+      <motion.div
+        className="absolute bottom-4 left-4 bg-white py-2 px-4 shadow-md"
+        initial={{ opacity: 0, scale: 0.75 }}
+        animate={textControls}
+      >
+        <span className="text-gray-900 font-semibold">{product.title}</span>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+export default SpecialMomentGrid;
