@@ -9,21 +9,21 @@ import val from "../assets/val.jpg";
 import valo from "../assets/valo.png";
 
 const products = [
-  {
-    image: vid3,
-    type: "video",
-  },
-
-  {
-    image: val,
-    type: "image",
-  },
+  
   {
     image: ka,
     type: "image",
   },
   {
+    image: vid3,
+    type: "video",
+  },
+  {
     image: l,
+    type: "image",
+  },
+  {
+    image: val,
     type: "image",
   },
 ];
