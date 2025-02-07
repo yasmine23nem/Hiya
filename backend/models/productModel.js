@@ -5,7 +5,11 @@ const productSchema = new mongoose.Schema({
     image: { type: Array, required: true },
     bestseller: { type: Boolean },
     category: { type: String, required: true },
-    description: { type: String, required: true },
+    description: {
+        type: String,
+        required: true,
+        maxLength: 6000 // Correct syntax for max length validation
+    },
     price: { type: Number, required: true },
     countInStock: { type: Number, required: true },
     active: {
