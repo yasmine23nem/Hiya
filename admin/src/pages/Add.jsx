@@ -53,45 +53,51 @@ const Add = ({ token }) => {
     }));
   };
 
+  // In the onSubmit function, update the axios request:
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Validate form data
-      if (
-        !formData.name ||
-        !formData.price ||
-        !formData.description ||
-        !formData.category
-      ) {
-        toast.error("Veuillez remplir tous les champs obligatoires");
-        return;
+      // Compress images before upload
+      const compressImage = async (file) => {
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1024,
+          useWebWorker: true,
+        };
+        try {
+          const compressedFile = await imageCompression(file, options);
+          return compressedFile;
+        } catch (error) {
+          console.error("Image compression failed:", error);
+          return file;
+        }
+      };
+
+      // Compress and prepare images
+      const processedImages = {};
+      for (const [key, file] of Object.entries(images)) {
+        if (file) {
+          processedImages[key] = await compressImage(file);
+        }
       }
 
-      // Validate images
-      if (!images.image1) {
-        toast.error("Au moins une image est requise");
-        return;
-      }
-
-      toast.info("Préparation des données...");
       const submitData = new FormData();
 
-      // Append images
-      Object.entries(images).forEach(([key, file]) => {
+      // Append compressed images
+      Object.entries(processedImages).forEach(([key, file]) => {
         if (file) {
           submitData.append(key, file);
-          toast.info(`Préparation de l'image ${key}...`);
         }
       });
 
-      // Append form data
+      // Append other form data
       Object.entries(formData).forEach(([key, value]) => {
         submitData.append(key, value);
       });
 
-      toast.info("Envoi des données au serveur...");
       const response = await axios.post(
         `${backendUrl}/api/product/create`,
         submitData,
@@ -100,42 +106,32 @@ const Add = ({ token }) => {
             token,
             "Content-Type": "multipart/form-data",
           },
-          maxContentLength: Infinity,
-          maxBodyLength: Infinity,
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            toast.info(`Upload progress: ${percentCompleted}%`, {
+              autoClose: false,
+              toastId: "uploadProgress",
+            });
+          },
+          timeout: 30000, // 30 second timeout
         }
       );
 
       if (response.data) {
+        toast.dismiss("uploadProgress");
         toast.success("Produit ajouté avec succès!");
-        // Reset form
-        setFormData({
-          name: "",
-          description: "",
-          category: "Bracelet en argent Véritable",
-          price: "",
-          bestseller: false,
-          countInStock: "",
-        });
-        setImages({
-          image1: null,
-          image2: null,
-          image3: null,
-        });
+        // Reset form...
       }
     } catch (error) {
+      toast.dismiss("uploadProgress");
       console.error("Error:", error);
-      if (error.response?.data?.error === "Missing required fields") {
-        toast.error("Champs requis manquants");
-      } else if (
-        error.response?.data?.error === "At least one image is required"
-      ) {
-        toast.error("Au moins une image est requise");
-      } else if (error.response?.status === 413) {
-        toast.error("Les images sont trop volumineuses");
-      } else if (error.response?.status === 401) {
-        toast.error("Session expirée, veuillez vous reconnecter");
+
+      if (error.code === "ECONNABORTED") {
+        toast.error("La requête a pris trop de temps. Veuillez réessayer.");
       } else {
-        toast.error(error.response?.data?.message || "Erreur lors de l'ajout");
+        toast.error(error.response?.data?.error || "Erreur lors de l'ajout");
       }
     } finally {
       setLoading(false);
