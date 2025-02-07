@@ -5,14 +5,24 @@ import { toast } from "react-toastify";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Add = ({ token }) => {
+  const categories = {
+    "Boucle d'oreilles": [
+      "Boucle d'oreilles en argent véritable",
+      "Boucle d'oreilles en argent plaqué",
+    ],
+    Bague: ["Bague en argent véritable", "Bague en argent plaqué"],
+    Collier: ["Collier en argent véritable", "Collier en argent plaqué"],
+    Bracelet: ["Bracelet en argent véritable", "Bracelet en argent plaqué"],
+    Sac: ["Sac"],
+  };
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    category: "Bracelet",
+    category: "Bracelet en argent véritable", // Updated default value
     price: "",
     bestseller: false,
-    countInStock: "", // Add this line
+    countInStock: "",
   });
   const [images, setImages] = useState({
     image1: null,
@@ -71,10 +81,10 @@ const Add = ({ token }) => {
         setFormData({
           name: "",
           description: "",
-          category: "Bracelet",
+          category: "Bracelet en argent véritable", // Updated default value
           price: "",
           bestseller: false,
-          countInStock: "", // Add this line
+          countInStock: "",
         });
         setImages({
           image1: null,
@@ -167,12 +177,15 @@ const Add = ({ token }) => {
                 onChange={handleInputChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
               >
-                <option value="Boucle d'oreilles">Boucle d'oreilles</option>
-                <option value="Bague">Bague</option>
-                <option value="Bracelet">Bracelet</option>
-                <option value="Collier">Collier</option>
-                <option value="Sac">Sac</option>
-                <option value="Parure">Parure</option>
+                {Object.entries(categories).map(([mainCat, subCats]) => (
+                  <optgroup key={mainCat} label={mainCat}>
+                    {subCats.map((subCat) => (
+                      <option key={subCat} value={subCat}>
+                        {subCat}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
               </select>
             </div>
 
