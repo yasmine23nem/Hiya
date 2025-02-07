@@ -10,6 +10,8 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const List = ({ token }) => {
   // State
   const [list, setList] = useState([]);
+  const [filteredList, setFilteredList] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -36,6 +38,17 @@ const List = ({ token }) => {
     "Sac",
   ];
 
+  // Filter products based on selected category
+  useEffect(() => {
+    if (selectedCategory === "all") {
+      setFilteredList(list);
+    } else {
+      setFilteredList(
+        list.filter((product) => product.category === selectedCategory)
+      );
+    }
+  }, [selectedCategory, list]);
+
   // API Functions
   const fetchProducts = async () => {
     try {
@@ -43,6 +56,7 @@ const List = ({ token }) => {
         headers: { token },
       });
       setList(response.data);
+      setFilteredList(response.data);
     } catch (error) {
       toast.error("Erreur lors du chargement des produits");
     } finally {
@@ -155,9 +169,28 @@ const List = ({ token }) => {
 
   return (
     <div className="p-4 md:p-6">
-      <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
-        Liste des produits
-      </h2>
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+        <h2 className="text-xl md:text-2xl font-bold">
+          Liste des produits ({filteredList.length} produits)
+        </h2>
+
+        <div className="mt-4 md:mt-0 flex items-center gap-4">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">Toutes les catégories</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category} (
+                {list.filter((product) => product.category === category).length}
+                )
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {/* Desktop Headers */}
@@ -173,7 +206,7 @@ const List = ({ token }) => {
         </div>
 
         {/* Product List */}
-        {list.map((product) => (
+        {filteredList.map((product) => (
           <div key={product._id} className="border-t">
             {/* Mobile View */}
             <div className="block md:hidden p-4">
