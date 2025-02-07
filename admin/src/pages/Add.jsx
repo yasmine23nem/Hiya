@@ -93,15 +93,6 @@ const Add = ({ token }) => {
         {
           headers: {
             token,
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress: (progressEvent) => {
-            const progress = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            toast.info(`Téléchargement: ${progress}%`, {
-              autoClose: progress === 100 ? 2000 : false,
-            });
           },
         }
       );
