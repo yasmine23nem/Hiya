@@ -7,9 +7,21 @@ import sharp from 'sharp';
 
 const createProduct = async (req, res) => {
     try {
+        console.log('Starting product creation...');
+        console.log('Request body:', req.body);
+
         const { name, price, description, category, countInStock, bestseller } = req.body;
 
+        // Log validation checks
+        console.log('Validating required fields:', {
+            name: !!name,
+            price: !!price,
+            description: !!description,
+            category: !!category
+        });
+
         if (!name || !price || !description || !category) {
+            console.log('Missing required fields');
             return res.status(400).json({
                 error: 'Missing required fields',
                 details: {
@@ -21,7 +33,11 @@ const createProduct = async (req, res) => {
             });
         }
 
+        // Log image validation
+        console.log('Files received:', req.files);
+
         if (!req.files || !req.files.image1) {
+            console.log('No images provided');
             return res.status(400).json({ error: 'At least one image is required' });
         }
 
@@ -30,23 +46,36 @@ const createProduct = async (req, res) => {
         if (req.files.image2) images.push(req.files.image2[0]);
         if (req.files.image3) images.push(req.files.image3[0]);
 
+        console.log('Processing images:', images.length);
+
         const uploadToCloudinary = async (file) => {
+            console.log('Optimizing image:', file.originalname);
             const optimized = await optimizeImage(file);
+
             return new Promise((resolve, reject) => {
+                console.log('Uploading to Cloudinary:', file.originalname);
                 const uploadStream = cloudinaryInstance.uploader.upload_stream(
                     { folder: 'products' },
                     (error, result) => {
-                        if (error) reject(error);
-                        else resolve(result);
+                        if (error) {
+                            console.error('Cloudinary upload error:', error);
+                            reject(error);
+                        } else {
+                            console.log('Cloudinary upload success:', result.secure_url);
+                            resolve(result);
+                        }
                     }
                 );
                 uploadStream.end(optimized);
             });
         };
 
+        console.log('Starting Cloudinary uploads...');
         const cloudinaryResults = await Promise.all(images.map(uploadToCloudinary));
         const imageUrls = cloudinaryResults.map(result => result.secure_url);
+        console.log('Image URLs:', imageUrls);
 
+        console.log('Creating product model...');
         const product = new productModel({
             name,
             price: Number(price),
@@ -57,15 +86,19 @@ const createProduct = async (req, res) => {
             bestseller: bestseller === 'true',
             active: true
         });
+        console.log('Product model created:', product);
 
+        console.log('Saving product to database...');
         await product.save();
+        console.log('Product saved successfully');
+
         res.status(201).json(product);
     } catch (error) {
         console.error('Create product error:', error);
+        console.error('Error stack:', error.stack);
         res.status(500).json({ error: error.message || 'Server error' });
     }
 };
-
 const getProducts = async (req, res) => {
     try {
         const products = await productModel.find({ active: true });

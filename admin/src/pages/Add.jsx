@@ -53,11 +53,32 @@ const Add = ({ token }) => {
     setLoading(true);
 
     try {
+      // Validate form data
+      if (
+        !formData.name ||
+        !formData.price ||
+        !formData.description ||
+        !formData.category
+      ) {
+        toast.error("Veuillez remplir tous les champs obligatoires");
+        return;
+      }
+
+      // Validate images
+      if (!images.image1) {
+        toast.error("Au moins une image est requise");
+        return;
+      }
+
+      toast.info("Préparation des données...");
       const submitData = new FormData();
 
       // Append images
       Object.entries(images).forEach(([key, file]) => {
-        if (file) submitData.append(key, file);
+        if (file) {
+          submitData.append(key, file);
+          toast.info(`Préparation de l'image ${key}...`);
+        }
       });
 
       // Append form data
@@ -65,23 +86,33 @@ const Add = ({ token }) => {
         submitData.append(key, value);
       });
 
+      toast.info("Envoi des données au serveur...");
       const response = await axios.post(
         `${backendUrl}/api/product/create`,
         submitData,
         {
           headers: {
             token,
+            "Content-Type": "multipart/form-data",
+          },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            toast.info(`Téléchargement: ${progress}%`, {
+              autoClose: progress === 100 ? 2000 : false,
+            });
           },
         }
       );
 
       if (response.data) {
-        toast.success("Produit ajouté avec succès");
+        toast.success("Produit ajouté avec succès!");
         // Reset form
         setFormData({
           name: "",
           description: "",
-          category: "Bracelet en argent véritable", // Updated default value
+          category: "Bracelet en argent véritable",
           price: "",
           bestseller: false,
           countInStock: "",
@@ -94,7 +125,19 @@ const Add = ({ token }) => {
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error(error.response?.data?.message || "Erreur lors de l'ajout");
+      if (error.response?.data?.error === "Missing required fields") {
+        toast.error("Champs requis manquants");
+      } else if (
+        error.response?.data?.error === "At least one image is required"
+      ) {
+        toast.error("Au moins une image est requise");
+      } else if (error.response?.status === 413) {
+        toast.error("Les images sont trop volumineuses");
+      } else if (error.response?.status === 401) {
+        toast.error("Session expirée, veuillez vous reconnecter");
+      } else {
+        toast.error(error.response?.data?.message || "Erreur lors de l'ajout");
+      }
     } finally {
       setLoading(false);
     }
