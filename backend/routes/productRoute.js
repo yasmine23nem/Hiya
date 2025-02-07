@@ -1,6 +1,7 @@
 import express from "express";
 import {
     getProducts,
+    getProductsAdmin,
     getProductById,
     deleteProduct,
     createProduct,
@@ -26,6 +27,7 @@ productRouter.post('/create',
     ]),
     createProduct
 );
+productRouter.get('/admin/list', getProductsAdmin);
 
 productRouter.put('/:id',
     adminAuth,
@@ -33,11 +35,11 @@ productRouter.put('/:id',
         { name: 'image1', maxCount: 1 },
         { name: 'image2', maxCount: 1 },
         { name: 'image3', maxCount: 1 }
-    ]), 
+    ]),
     updateProduct
 );
 
 productRouter.patch('/:id/toggle-active', adminAuth, toggleActive);
 productRouter.delete('/:id', adminAuth, deleteProduct);
 
-export default productRouter; 
+export default productRouter;

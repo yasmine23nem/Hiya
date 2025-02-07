@@ -39,7 +39,9 @@ const List = ({ token }) => {
   // API Functions
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/api/product/list`);
+      const response = await axios.get(`${backendUrl}/api/product/admin/list`, {
+        headers: { token },
+      });
       setList(response.data);
     } catch (error) {
       toast.error("Erreur lors du chargement des produits");
