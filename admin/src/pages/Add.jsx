@@ -33,6 +33,11 @@ const Add = ({ token }) => {
   const handleImageChange = (e, key) => {
     const file = e.target.files[0];
     if (file) {
+      // Check file size (limit to 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("L'image est trop volumineuse (maximum 5MB)");
+        return;
+      }
       setImages((prev) => ({
         ...prev,
         [key]: file,
@@ -93,7 +98,10 @@ const Add = ({ token }) => {
         {
           headers: {
             token,
+            "Content-Type": "multipart/form-data",
           },
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
         }
       );
 

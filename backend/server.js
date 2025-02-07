@@ -17,6 +17,12 @@ const port = process.env.PORT || 8000;
 connectDB();
 connectCloudinary();
 
+// Backend Express server configuration
+app.use(cors({
+    origin: 'https://admin.hiyamode.shop',
+    credentials: true
+}));
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '60mb' }));
