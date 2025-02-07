@@ -186,7 +186,9 @@ const List = ({ token }) => {
                 <div className="flex-1">
                   <h3 className="font-medium text-lg">{product.name}</h3>
                   <p className="text-gray-600">{product.category}</p>
-                  <p className="text-lg font-semibold mt-1">{product.price}€</p>
+                  <p className="text-lg font-semibold mt-1">
+                    {product.price}DA
+                  </p>
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center">
                       {product.active ? (
@@ -252,7 +254,7 @@ const List = ({ token }) => {
                 {product.name}
               </div>
               <div>{product.category}</div>
-              <div>{product.price}€</div>
+              <div>{product.price}DA</div>
               <div>
                 {product.active ? (
                   <span className="text-green-600 flex items-center gap-1">
