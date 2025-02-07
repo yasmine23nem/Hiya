@@ -1,41 +1,49 @@
 import React, { useEffect } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import vid5 from "../assets/vid5.mp4";
-import vid6 from "../assets/vid6.mp4";
 import vid7 from "../assets/vid7.mp4";
-import vid1 from "../assets/vid1.mp4";
 import vid2 from "../assets/vid2.mp4";
+import vid8 from "../assets/vid8.mp4";
+import bleu from "../assets/bleu.jpg";
+import vid9 from "../assets/vid9.mp4";
+import etoile from "../assets/etoile.jpg";
 
 const products = [
   {
-    image: vid1,
+    image: vid8,
     type: "video",
   },
   {
-    image: vid2,
-    type: "video",
+    image: etoile,
+    type: "image",
+  },
+
+  {
+    image: bleu,
+    type: "image",
   },
   {
-    image: vid7,
+    image: vid9,
     type: "video",
   },
 ];
-
 const SpecialMomentGrid = () => {
   return (
-    <div className="container mx-auto px-4 sm:px-6 py-12">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
-        <div className="md:col-span-1">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">
+    <div className="container mx-auto px-4 sm:px-6 py-8">
+      <div className="flex items-center justify-between gap-6 max-w-3xl mx-auto">
+        <div className="w-1/4 flex items-center justify-center min-h-[300px]">
+          <h1 className="text-xl sm:text-4xl font-bold text-gray-900 text-center">
             Pour des
-            <br /> moments spéciaux
+            <br /> moments
+            <br /> spéciaux
           </h1>
         </div>
-        <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {products.map((product, index) => (
-            <GridItem key={index} product={product} />
-          ))}
+        <div className="w-3/4 pl-8">
+          <div className="grid grid-cols-2 gap-2 max-w-sm ml-auto">
+            {products.map((product, index) => (
+              <GridItem key={index} product={product} />
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -72,7 +80,7 @@ const GridItem = ({ product }) => {
         <img
           src={product.image}
           alt="Special moment"
-          className="w-full h-48 sm:h-72 object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-32 sm:h-48 object-cover transition-transform duration-500 group-hover:scale-105"
         />
       ) : (
         <video
@@ -80,11 +88,10 @@ const GridItem = ({ product }) => {
           autoPlay
           loop
           muted
-          className="w-full h-48 sm:h-72 object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-32 sm:h-48 object-cover transition-transform duration-500 group-hover:scale-105"
         />
       )}
     </motion.div>
   );
 };
-
 export default SpecialMomentGrid;

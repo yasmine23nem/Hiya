@@ -1,5 +1,5 @@
 import React from "react";
-import vid4 from "../assets/vid1.mp4";
+import vid2 from "../assets/vid2.mp4";
 
 const VideoBanner = () => {
   return (
@@ -8,7 +8,7 @@ const VideoBanner = () => {
         {/* Section Vidéo */}
         <div className="relative w-full h-full md:w-full md:h-full">
           <video autoPlay loop muted className="w-full h-full object-cover">
-            <source src={vid4} type="video/mp4" />
+            <source src={vid2} type="video/mp4" />
             Votre navigateur ne supporte pas la balise vidéo.
           </video>
         </div>
