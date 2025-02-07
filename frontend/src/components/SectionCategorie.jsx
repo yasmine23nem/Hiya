@@ -14,6 +14,7 @@ import boucle from "../assets/boucle.jpg";
 import bra from "../assets/bra.jpg";
 import collier from "../assets/collier.jpg";
 import val from "../assets/val.jpg";
+
 const categories = [
   { img: bra, label: "BRACELETS" },
   { img: rr, label: "BAGUES" },
@@ -25,7 +26,7 @@ const categories = [
 const SectionCategorie = () => {
   return (
     <motion.div
-      className="flex justify-center items-center space-x-12 py-10"
+      className="flex overflow-x-auto py-10 space-x-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
@@ -33,7 +34,7 @@ const SectionCategorie = () => {
       {categories.map((item, index) => (
         <motion.div
           key={index}
-          className="text-center"
+          className="text-center flex-shrink-0"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: index * 0.2 }}
@@ -43,13 +44,13 @@ const SectionCategorie = () => {
           <motion.img
             src={item.img}
             alt={item.label}
-            className="w-32 h-32 object-contain"
+            className="w-24 h-24 sm:w-32 sm:h-32 object-contain"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: index * 0.2 }}
           />
           <motion.p
-            className="mt-2 text-sm font-semibold tracking-wide text-gray-800"
+            className="mt-2 text-xs sm:text-sm font-semibold tracking-wide text-gray-800"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: index * 0.2 }}

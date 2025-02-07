@@ -9,7 +9,6 @@ import val from "../assets/val.jpg";
 import valo from "../assets/valo.png";
 
 const products = [
-  
   {
     image: ka,
     type: "image",
@@ -19,25 +18,26 @@ const products = [
     type: "video",
   },
   {
-    image: l,
+    image: val,
     type: "image",
   },
   {
-    image: val,
+    image: l,
     type: "image",
   },
 ];
 
 const SpecialMomentGrid = () => {
   return (
-    <div className="container mx-auto px-6 py-12">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+    <div className="container mx-auto px-4 sm:px-6 py-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
         <div className="md:col-span-1">
-          <h1 className="text-5xl font-bold text-gray-900">
-            Pour des<br /> moments spéciaux
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">
+            Pour des
+            <br /> moments spéciaux
           </h1>
         </div>
-        <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="md:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
           {products.map((product, index) => (
             <GridItem key={index} product={product} />
           ))}
@@ -77,7 +77,7 @@ const GridItem = ({ product }) => {
         <img
           src={product.image}
           alt="Special moment"
-          className="w-full h-72 object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-48 sm:h-72 object-cover transition-transform duration-500 group-hover:scale-105"
         />
       ) : (
         <video
@@ -85,7 +85,7 @@ const GridItem = ({ product }) => {
           autoPlay
           loop
           muted
-          className="w-full h-72 object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-48 sm:h-72 object-cover transition-transform duration-500 group-hover:scale-105"
         />
       )}
     </motion.div>

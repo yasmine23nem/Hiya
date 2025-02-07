@@ -3,12 +3,11 @@ import { NavLink } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { Link } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
-import { Search, User, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
+import { Search, User, ShoppingCart, Menu, X } from "lucide-react";
 
 export const Navbar = ({ hidden }) => {
   const [visible, setVisible] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [collectionMenuVisible, setCollectionMenuVisible] = useState(false);
   const {
     setShowSearch,
     getCartCount,
@@ -123,14 +122,6 @@ export const Navbar = ({ hidden }) => {
           </Link>
 
           {/* CTA Button */}
-          {!token && (
-            <Link
-              to="/register"
-              className="bg-rose-600 text-white px-4 py-2 rounded-md shadow-md hover:bg-rose-700 transition"
-            >
-              S'inscrire
-            </Link>
-          )}
 
           {/* Mobile Menu Toggle */}
           <button
@@ -144,9 +135,15 @@ export const Navbar = ({ hidden }) => {
 
       {/* Mobile Menu */}
       <div
-        className={`fixed inset-y-0 right-0 w-64 bg-white shadow-lg transform transition-transform duration-300 ${
-          visible ? "translate-x-0" : "translate-x-full"
-        } md:hidden z-50`}
+        className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300 ${
+          visible ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setVisible(false)}
+      ></div>
+      <div
+        className={`fixed top-0 left-0 w-full bg-white z-50 transform transition-transform duration-300 ${
+          visible ? "translate-y-0" : "-translate-y-full"
+        } md:hidden`}
       >
         <div className="p-4">
           <button

@@ -1,8 +1,5 @@
-// Imports remain the same
 import styled from "styled-components";
 import React, { useState, useEffect } from "react";
-import ArrowRight from "@mui/icons-material/ArrowRight";
-import ArrowLeft from "@mui/icons-material/ArrowLeft";
 import { SlideItem } from "../assets/data";
 
 const Container = styled.div`
@@ -16,29 +13,6 @@ const Container = styled.div`
 
   @media (max-width: 768px) {
     height: 60vh;
-  }
-`;
-
-const Arrow = styled.div`
-  width: 50px;
-  height: 50px;
-  background-color: rgba(225, 29, 72, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: ${(props) => (props.direction === "left" ? "20px" : "unset")};
-  right: ${(props) => (props.direction === "right" ? "20px" : "unset")};
-  cursor: pointer;
-  z-index: 2;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    background-color: rgba(225, 29, 72, 0.4);
-    transform: translateY(-50%) scale(1.1);
   }
 `;
 
@@ -80,6 +54,10 @@ const ImageContainer = styled.div`
   &:hover::before {
     transform: scale(1.05);
   }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const VideoContainer = styled.video`
@@ -90,6 +68,10 @@ const VideoContainer = styled.video`
 
   &:hover {
     transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
@@ -102,10 +84,15 @@ const InfoContainer = styled.div`
   text-align: center;
   padding: 40px;
   color: #ffffff;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 20px;
+  }
 `;
 
 const Title = styled.h1`
-  font-size: clamp(50px, 6vw, 80px);
+  font-size: clamp(30px, 6vw, 80px);
   font-family: "Pinyon Script", cursive;
   color: #ffffff;
   margin-bottom: 30px;
@@ -137,7 +124,7 @@ const Title = styled.h1`
 `;
 
 const Description = styled.p`
-  font-size: clamp(16px, 2vw, 24px);
+  font-size: clamp(14px, 2vw, 24px);
   font-family: "Playfair Display", serif;
   line-height: 1.6;
   max-width: 80%;
@@ -180,17 +167,8 @@ const Dot = styled.div`
   }
 `;
 
-// Component logic remains the same
 const SquareSlider = () => {
   const [slideIndex, setSlideIndex] = useState(0);
-
-  const handleClick = (direction) => {
-    if (direction === "left") {
-      setSlideIndex(slideIndex > 0 ? slideIndex - 1 : SlideItem.length - 1);
-    } else {
-      setSlideIndex(slideIndex < SlideItem.length - 1 ? slideIndex + 1 : 0);
-    }
-  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -201,9 +179,6 @@ const SquareSlider = () => {
 
   return (
     <Container>
-      <Arrow direction="left" onClick={() => handleClick("left")}>
-        <ArrowLeft style={{ color: "#ffffff" }} />
-      </Arrow>
       <Wrapper slideIndex={slideIndex}>
         {SlideItem.map((item, index) => (
           <Slide key={item.id} active={index === slideIndex} index={index}>
@@ -219,9 +194,6 @@ const SquareSlider = () => {
           </Slide>
         ))}
       </Wrapper>
-      <Arrow direction="right" onClick={() => handleClick("right")}>
-        <ArrowRight style={{ color: "#ffffff" }} />
-      </Arrow>
       <Dots>
         {SlideItem.map((_, index) => (
           <Dot

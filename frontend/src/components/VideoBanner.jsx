@@ -16,15 +16,15 @@ const VideoBanner = () => {
         {/* Section Texte */}
         <div className="flex flex-col justify-center p-10">
           <h2 className="text-3xl font-bold text-gray-900">
-            Brillant ensemble
+            Élégance intemporelle
           </h2>
           <p className="text-gray-600 mt-4">
-            Découvrez les essentiels en diamants de laboratoire que vous
-            utiliserez encore et encore. Les petites pierres éclatent de chaleur
-            et de lumière. Empilez, mélangez et multipliez – jour après jour,
-            année après année.
+            Découvrez les bijoux en argent véritable qui incarnent l'élégance et
+            la sophistication. Chaque pièce est conçue pour briller avec une
+            beauté intemporelle, parfaite pour toutes les occasions. Empilez,
+            mélangez et multipliez – jour après jour, année après année.
           </p>
-          <button className="mt-6 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition">
+          <button className="mt-6 px-6 py-3 bg-rose-600 text-white rounded-lg hover:bg-gray-800 transition">
             DÉCOUVREZ LES NOUVEAUX STYLES
           </button>
         </div>
