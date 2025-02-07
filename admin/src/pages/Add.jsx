@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import imageCompression from "browser-image-compression";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -15,28 +16,47 @@ const Add = ({ token }) => {
     Bracelet: ["Bracelet en argent véritable", "Bracelet en argent plaqué"],
     Sac: ["Sac"],
   };
+
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    category: "Bracelet en argent véritable", // Updated default value
+    category: "Bracelet en argent véritable",
     price: "",
     bestseller: false,
     countInStock: "",
   });
+
   const [images, setImages] = useState({
     image1: null,
     image2: null,
     image3: null,
   });
 
-  const handleImageChange = (e, key) => {
+  const handleImageChange = async (e, key) => {
     const file = e.target.files[0];
     if (file) {
-      setImages((prev) => ({
-        ...prev,
-        [key]: file,
-      }));
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("L'image est trop volumineuse (maximum 10MB)");
+        return;
+      }
+
+      try {
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1024,
+          useWebWorker: true,
+        };
+
+        const compressedFile = await imageCompression(file, options);
+        setImages((prev) => ({
+          ...prev,
+          [key]: compressedFile,
+        }));
+      } catch (error) {
+        console.error("Erreur de compression:", error);
+        toast.error("Erreur lors de la compression de l'image");
+      }
     }
   };
 
@@ -53,7 +73,6 @@ const Add = ({ token }) => {
     setLoading(true);
 
     try {
-      // Validate form data
       if (
         !formData.name ||
         !formData.price ||
@@ -61,23 +80,22 @@ const Add = ({ token }) => {
         !formData.category
       ) {
         toast.error("Veuillez remplir tous les champs obligatoires");
+        setLoading(false);
         return;
       }
 
-      // Validate images
       if (!images.image1) {
         toast.error("Au moins une image est requise");
+        setLoading(false);
         return;
       }
 
-      toast.info("Préparation des données...");
       const submitData = new FormData();
 
       // Append images
       Object.entries(images).forEach(([key, file]) => {
         if (file) {
           submitData.append(key, file);
-          toast.info(`Préparation de l'image ${key}...`);
         }
       });
 
@@ -86,20 +104,30 @@ const Add = ({ token }) => {
         submitData.append(key, value);
       });
 
-      toast.info("Envoi des données au serveur...");
       const response = await axios.post(
         `${backendUrl}/api/product/create`,
         submitData,
         {
           headers: {
             token,
-            "Content-Type": "multipart/form-data",
           },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            toast.info(`Envoi: ${percentCompleted}%`, {
+              toastId: "uploadProgress",
+              autoClose: false,
+            });
+          },
+          timeout: 30000,
         }
       );
 
       if (response.data) {
+        toast.dismiss("uploadProgress");
         toast.success("Produit ajouté avec succès!");
+
         // Reset form
         setFormData({
           name: "",
@@ -116,19 +144,20 @@ const Add = ({ token }) => {
         });
       }
     } catch (error) {
+      toast.dismiss("uploadProgress");
       console.error("Error:", error);
-      if (error.response?.data?.error === "Missing required fields") {
-        toast.error("Champs requis manquants");
-      } else if (
-        error.response?.data?.error === "At least one image is required"
-      ) {
-        toast.error("Au moins une image est requise");
+
+      if (error.code === "ECONNABORTED") {
+        toast.error("La requête a pris trop de temps. Veuillez réessayer.");
       } else if (error.response?.status === 413) {
         toast.error("Les images sont trop volumineuses");
       } else if (error.response?.status === 401) {
         toast.error("Session expirée, veuillez vous reconnecter");
       } else {
-        toast.error(error.response?.data?.message || "Erreur lors de l'ajout");
+        toast.error(
+          error.response?.data?.error ||
+            "Erreur lors de l'ajout. Veuillez réessayer."
+        );
       }
     } finally {
       setLoading(false);
@@ -171,7 +200,7 @@ const Add = ({ token }) => {
           ))}
         </div>
 
-        {/* Product Details */}
+        {/* Rest of your form remains unchanged */}
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">

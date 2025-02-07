@@ -1,307 +1,268 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
-import imageCompression from "browser-image-compression";
+import { cloudinaryInstance } from '../config/cloudinary.js';
+import Product from '../models/productModel.js';
+import productModel from '../models/productModel.js';
+import sharp from 'sharp';
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-const Add = ({ token }) => {
-    const categories = {
-        "Boucle d'oreilles": [
-            "Boucle d'oreilles en argent véritable",
-            "Boucle d'oreilles en argent plaqué",
-        ],
-        Bague: ["Bague en argent véritable", "Bague en argent plaqué"],
-        Collier: ["Collier en argent véritable", "Collier en argent plaqué"],
-        Bracelet: ["Bracelet en argent véritable", "Bracelet en argent plaqué"],
-        Sac: ["Sac"],
-    };
 
-    const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        name: "",
-        description: "",
-        category: "Bracelet en argent véritable",
-        price: "",
-        bestseller: false,
-        countInStock: "",
-    });
+const createProduct = async (req, res) => {
+    try {
+        console.log('Starting product creation...');
+        console.log('Request body:', req.body);
 
-    const [images, setImages] = useState({
-        image1: null,
-        image2: null,
-        image3: null,
-    });
+        const { name, price, description, category, countInStock, bestseller } = req.body;
 
-    const handleImageChange = async (e, key) => {
-        const file = e.target.files[0];
-        if (file) {
-            if (file.size > 10 * 1024 * 1024) {
-                toast.error("L'image est trop volumineuse (maximum 10MB)");
-                return;
-            }
+        // Log validation checks
+        console.log('Validating required fields:', {
+            name: !!name,
+            price: !!price,
+            description: !!description,
+            category: !!category
+        });
 
-            try {
-                const options = {
-                    maxSizeMB: 1,
-                    maxWidthOrHeight: 1024,
-                    useWebWorker: true,
-                };
-
-                const compressedFile = await imageCompression(file, options);
-                setImages((prev) => ({
-                    ...prev,
-                    [key]: compressedFile,
-                }));
-            } catch (error) {
-                console.error("Erreur de compression:", error);
-                toast.error("Erreur lors de la compression de l'image");
-            }
+        if (!name || !price || !description || !category) {
+            console.log('Missing required fields');
+            return res.status(400).json({
+                error: 'Missing required fields',
+                details: {
+                    name: !name ? 'Name is required' : null,
+                    price: !price ? 'Price is required' : null,
+                    description: !description ? 'Description is required' : null,
+                    category: !category ? 'Category is required' : null
+                }
+            });
         }
-    };
 
-    const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: type === "checkbox" ? checked : value,
-        }));
-    };
+        // Log image validation
+        console.log('Files received:', req.files);
 
-    const onSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+        if (!req.files || !req.files.image1) {
+            console.log('No images provided');
+            return res.status(400).json({ error: 'At least one image is required' });
+        }
 
-        try {
-            if (!formData.name || !formData.price || !formData.description || !formData.category) {
-                toast.error("Veuillez remplir tous les champs obligatoires");
-                setLoading(false);
-                return;
-            }
+        const images = [];
+        if (req.files.image1) images.push(req.files.image1[0]);
+        if (req.files.image2) images.push(req.files.image2[0]);
+        if (req.files.image3) images.push(req.files.image3[0]);
 
-            if (!images.image1) {
-                toast.error("Au moins une image est requise");
-                setLoading(false);
-                return;
-            }
+        console.log('Processing images:', images.length);
 
-            const submitData = new FormData();
+        const uploadToCloudinary = async (file) => {
+            console.log('Optimizing image:', file.originalname);
+            const optimized = await optimizeImage(file);
 
-            // Append images
-            Object.entries(images).forEach(([key, file]) => {
-                if (file) {
-                    submitData.append(key, file);
-                }
-            });
-
-            // Append form data
-            Object.entries(formData).forEach(([key, value]) => {
-                submitData.append(key, value);
-            });
-
-            const response = await axios.post(
-                `${backendUrl}/api/product/create`,
-                submitData,
-                {
-                    headers: {
-                        token
-                    },
-                    onUploadProgress: (progressEvent) => {
-                        const percentCompleted = Math.round(
-                            (progressEvent.loaded * 100) / progressEvent.total
-                        );
-                        toast.info(`Envoi: ${percentCompleted}%`, {
-                            toastId: "uploadProgress",
-                            autoClose: false,
-                        });
-                    },
-                    timeout: 30000,
-                }
-            );
-
-            if (response.data) {
-                toast.dismiss("uploadProgress");
-                toast.success("Produit ajouté avec succès!");
-
-                // Reset form
-                setFormData({
-                    name: "",
-                    description: "",
-                    category: "Bracelet en argent véritable",
-                    price: "",
-                    bestseller: false,
-                    countInStock: "",
-                });
-                setImages({
-                    image1: null,
-                    image2: null,
-                    image3: null,
-                });
-            }
-        } catch (error) {
-            toast.dismiss("uploadProgress");
-            console.error("Error:", error);
-
-            if (error.code === "ECONNABORTED") {
-                toast.error("La requête a pris trop de temps. Veuillez réessayer.");
-            } else if (error.response?.status === 413) {
-                toast.error("Les images sont trop volumineuses");
-            } else if (error.response?.status === 401) {
-                toast.error("Session expirée, veuillez vous reconnecter");
-            } else {
-                toast.error(
-                    error.response?.data?.error ||
-                    "Erreur lors de l'ajout. Veuillez réessayer."
+            return new Promise((resolve, reject) => {
+                console.log('Uploading to Cloudinary:', file.originalname);
+                const uploadStream = cloudinaryInstance.uploader.upload_stream(
+                    { folder: 'products' },
+                    (error, result) => {
+                        if (error) {
+                            console.error('Cloudinary upload error:', error);
+                            reject(error);
+                        } else {
+                            console.log('Cloudinary upload success:', result.secure_url);
+                            resolve(result);
+                        }
+                    }
                 );
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
+                uploadStream.end(optimized);
+            });
+        };
 
-    return (
-        <div className="max-w-4xl mx-auto p-6">
-            <h2 className="text-2xl font-bold mb-6">Ajouter un nouveau produit</h2>
+        console.log('Starting Cloudinary uploads...');
+        const cloudinaryResults = await Promise.all(images.map(uploadToCloudinary));
+        const imageUrls = cloudinaryResults.map(result => result.secure_url);
+        console.log('Image URLs:', imageUrls);
 
-            <form onSubmit={onSubmit} className="space-y-6">
-                {/* Images Upload */}
-                <div className="grid grid-cols-3 gap-4">
-                    {["image1", "image2", "image3"].map((key) => (
-                        <div key={key} className="relative">
-                            <label
-                                htmlFor={key}
-                                className="block cursor-pointer border-2 border-dashed border-gray-300 rounded-lg p-2"
-                            >
-                                {images[key] ? (
-                                    <img
-                                        src={URL.createObjectURL(images[key])}
-                                        alt={`Preview ${key}`}
-                                        className="w-full h-32 object-cover rounded"
-                                    />
-                                ) : (
-                                    <div className="h-32 flex items-center justify-center bg-gray-50">
-                                        <span className="text-gray-500">+ Ajouter image</span>
-                                    </div>
-                                )}
-                                <input
-                                    type="file"
-                                    id={key}
-                                    onChange={(e) => handleImageChange(e, key)}
-                                    className="hidden"
-                                    accept="image/*"
-                                />
-                            </label>
-                        </div>
-                    ))}
-                </div>
+        console.log('Creating product model...');
+        const product = new productModel({
+            name,
+            price: Number(price),
+            description,
+            category,
+            countInStock: Number(countInStock) || 10,
+            image: imageUrls,
+            bestseller: bestseller === 'true',
+            active: true
+        });
+        console.log('Product model created:', product);
 
-                {/* Rest of your form remains unchanged */}
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Nom du produit
-                        </label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                            required
-                        />
-                    </div>
+        console.log('Saving product to database...');
+        await product.save();
+        console.log('Product saved successfully');
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Description
-                        </label>
-                        <textarea
-                            name="description"
-                            value={formData.description}
-                            onChange={handleInputChange}
-                            rows="4"
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                            required
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">
-                                Catégorie
-                            </label>
-                            <select
-                                name="category"
-                                value={formData.category}
-                                onChange={handleInputChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                            >
-                                {Object.entries(categories).map(([mainCat, subCats]) => (
-                                    <optgroup key={mainCat} label={mainCat}>
-                                        {subCats.map((subCat) => (
-                                            <option key={subCat} value={subCat}>
-                                                {subCat}
-                                            </option>
-                                        ))}
-                                    </optgroup>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">
-                                Prix
-                            </label>
-                            <input
-                                type="number"
-                                name="price"
-                                value={formData.price}
-                                onChange={handleInputChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">
-                                Stock
-                            </label>
-                            <input
-                                type="number"
-                                name="countInStock"
-                                value={formData.countInStock}
-                                onChange={handleInputChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                                min="0"
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex items-center">
-                        <input
-                            type="checkbox"
-                            name="bestseller"
-                            checked={formData.bestseller}
-                            onChange={handleInputChange}
-                            className="h-4 w-4 text-blue-600"
-                        />
-                        <label className="ml-2 text-sm text-gray-700">
-                            Meilleure vente
-                        </label>
-                    </div>
-                </div>
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className={`w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${loading ? "opacity-75 cursor-not-allowed" : ""
-                        }`}
-                >
-                    {loading ? "Ajout en cours..." : "Ajouter ce produit"}
-                </button>
-            </form>
-        </div>
-    );
+        res.status(201).json(product);
+    } catch (error) {
+        console.error('Create product error:', error);
+        console.error('Error stack:', error.stack);
+        res.status(500).json({ error: error.message || 'Server error' });
+    }
+};
+const getProducts = async (req, res) => {
+    try {
+        const products = await productModel.find({ active: true });
+        res.json(products);
+    } catch (error) {
+        console.error('Get products error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+const getProductsAdmin = async (req, res) => {
+    try {
+        const products = await productModel.find();
+        res.json(products);
+    } catch (error) {
+        console.error('Get products error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
 };
 
-export default Add;
+const getProductById = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        res.json(product);
+    } catch (error) {
+        console.error('Get product by ID error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+// In updateProduct function
+// Add this at the top with other imports
+const optimizeImage = async (file) => {
+    try {
+        const optimized = await sharp(file.path)
+            .resize(800, 800, { fit: 'inside' })
+            .jpeg({ quality: 80 })
+            .toBuffer();
+        return optimized;
+    } catch (error) {
+        console.error('Image optimization error:', error);
+        throw error;
+    }
+};
+
+const uploadToCloudinary = async (file) => {
+    const optimized = await optimizeImage(file);
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinaryInstance.uploader.upload_stream(
+            { folder: 'products' },
+            (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            }
+        );
+        uploadStream.end(optimized);
+    });
+};
+
+// Replace the existing updateProduct function
+const updateProduct = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        const { name, price, description, category, countInStock, bestseller, keepExistingImages } = req.body;
+        let imageUrls = [...product.image];
+
+        // Only handle images if new ones are uploaded and we're not keeping existing ones
+        if (req.files && !keepExistingImages) {
+            const images = [];
+            if (req.files.image1) images.push(req.files.image1[0]);
+            if (req.files.image2) images.push(req.files.image2[0]);
+            if (req.files.image3) images.push(req.files.image3[0]);
+
+            if (images.length > 0) {
+                // Delete old images
+                const deletePromises = product.image.map(imageUrl => {
+                    const publicId = imageUrl.split('/').pop().split('.')[0];
+                    return cloudinaryInstance.uploader.destroy(`products/${publicId}`);
+                });
+                await Promise.all(deletePromises);
+
+                // Upload new images
+                const cloudinaryResults = await Promise.all(images.map(uploadToCloudinary));
+                imageUrls = cloudinaryResults.map(result => result.secure_url);
+            }
+        }
+
+        const updatedProduct = await Product.findByIdAndUpdate(
+            req.params.id,
+            {
+                name: name || product.name,
+                price: price ? Number(price) : product.price,
+                description: description || product.description,
+                category: category || product.category,
+                countInStock: countInStock ? Number(countInStock) : product.countInStock,
+                bestseller: bestseller === 'true',
+                image: imageUrls
+            },
+            { new: true }
+        );
+
+        res.json(updatedProduct);
+    } catch (error) {
+        console.error('Update product error:', error);
+        res.status(500).json({ error: error.message || 'Error updating product' });
+    }
+};
+
+// ...existing code...
+const toggleActive = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        product.active = !product.active;
+        await product.save();
+
+        res.json({
+            success: true,
+            message: `Product ${product.active ? 'activated' : 'deactivated'} successfully`,
+            active: product.active
+        });
+    } catch (error) {
+        console.error('Toggle active error:', error);
+        res.status(500).json({ error: 'Error toggling product status' });
+    }
+};
+
+const deleteProduct = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        if (product.image && product.image.length > 0) {
+            const deletePromises = product.image.map(imageUrl => {
+                const publicId = imageUrl.split('/').pop().split('.')[0];
+                return cloudinaryInstance.uploader.destroy(`products/${publicId}`);
+            });
+            await Promise.all(deletePromises);
+        }
+
+        await Product.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Product deleted successfully' });
+    } catch (error) {
+        console.error('Delete product error:', error);
+        res.status(500).json({ error: 'Error deleting product' });
+    }
+};
+
+export {
+    createProduct,
+    getProducts,
+    getProductById,
+    getProductsAdmin,
+    updateProduct,
+    deleteProduct,
+    toggleActive
+};
