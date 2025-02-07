@@ -103,7 +103,7 @@ const Add = ({ token }) => {
         setFormData({
           name: "",
           description: "",
-          category: "Bracelet en argent véritable",
+          category: "Bracelet en argent Véritable",
           price: "",
           bestseller: false,
           countInStock: "",
