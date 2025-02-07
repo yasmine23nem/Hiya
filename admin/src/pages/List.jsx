@@ -29,14 +29,16 @@ const List = ({ token }) => {
     newImages: [],
   });
 
-  // Categories
-  const categories = [
-    "Boucle d'oreilles",
-    "Bague",
-    "Collier",
-    "Bracelet",
-    "Sac",
-  ];
+  const categories = {
+    "Boucle d'oreilles": [
+      "Boucle d'oreilles en argent véritable",
+      "Boucle d'oreilles en argent plaqué",
+    ],
+    Bague: ["Bague en argent véritable", "Bague en argent plaqué"],
+    Collier: ["Collier en argent véritable", "Collier en argent plaqué"],
+    Bracelet: ["Bracelet en argent véritable", "Bracelet en argent plaqué"],
+    Sac: ["Sac"],
+  };
 
   // Filter products based on selected category
   useEffect(() => {
@@ -181,12 +183,19 @@ const List = ({ token }) => {
             className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">Toutes les catégories</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category} (
-                {list.filter((product) => product.category === category).length}
-                )
-              </option>
+            {Object.entries(categories).map(([mainCat, subCats]) => (
+              <optgroup key={mainCat} label={mainCat}>
+                {subCats.map((subCat) => (
+                  <option key={subCat} value={subCat}>
+                    {subCat} (
+                    {
+                      list.filter((product) => product.category === subCat)
+                        .length
+                    }
+                    )
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </div>
@@ -398,10 +407,14 @@ const List = ({ token }) => {
                     }
                     className="w-full border rounded p-2"
                   >
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
+                    {Object.entries(categories).map(([mainCat, subCats]) => (
+                      <optgroup key={mainCat} label={mainCat}>
+                        {subCats.map((subCat) => (
+                          <option key={subCat} value={subCat}>
+                            {subCat}
+                          </option>
+                        ))}
+                      </optgroup>
                     ))}
                   </select>
                 </div>

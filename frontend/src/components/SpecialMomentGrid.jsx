@@ -1,29 +1,24 @@
 import React, { useEffect } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import vid3 from "../assets/vid3.mp4";
-import i2 from "../assets/i2.jpg";
-import l from "../assets/l.jpg";
-import ka from "../assets/ka.jpg";
-import val from "../assets/val.jpg";
-import valo from "../assets/valo.png";
+import vid5 from "../assets/vid5.mp4";
+import vid6 from "../assets/vid6.mp4";
+import vid7 from "../assets/vid7.mp4";
+import vid1 from "../assets/vid1.mp4";
+import vid2 from "../assets/vid2.mp4";
 
 const products = [
   {
-    image: ka,
-    type: "image",
-  },
-  {
-    image: vid3,
+    image: vid1,
     type: "video",
   },
   {
-    image: val,
-    type: "image",
+    image: vid2,
+    type: "video",
   },
   {
-    image: l,
-    type: "image",
+    image: vid7,
+    type: "video",
   },
 ];
 
