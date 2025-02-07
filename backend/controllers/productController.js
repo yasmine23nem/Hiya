@@ -3,18 +3,7 @@ import Product from '../models/productModel.js';
 import productModel from '../models/productModel.js';
 import sharp from 'sharp';
 
-const optimizeImage = async (file) => {
-    try {
-        const optimized = await sharp(file.path)
-            .resize(800, 800, { fit: 'inside' })
-            .jpeg({ quality: 80 })
-            .toBuffer();
-        return optimized;
-    } catch (error) {
-        console.error('Image optimization error:', error);
-        throw error;
-    }
-};
+
 
 const createProduct = async (req, res) => {
     try {
@@ -79,7 +68,7 @@ const createProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
     try {
-        const products = await productModel.find({});
+        const products = await productModel.find({ active: true });
         res.json(products);
     } catch (error) {
         console.error('Get products error:', error);
@@ -99,7 +88,36 @@ const getProductById = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+// In updateProduct function
+// Add this at the top with other imports
+const optimizeImage = async (file) => {
+    try {
+        const optimized = await sharp(file.path)
+            .resize(800, 800, { fit: 'inside' })
+            .jpeg({ quality: 80 })
+            .toBuffer();
+        return optimized;
+    } catch (error) {
+        console.error('Image optimization error:', error);
+        throw error;
+    }
+};
 
+const uploadToCloudinary = async (file) => {
+    const optimized = await optimizeImage(file);
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinaryInstance.uploader.upload_stream(
+            { folder: 'products' },
+            (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            }
+        );
+        uploadStream.end(optimized);
+    });
+};
+
+// Replace the existing updateProduct function
 const updateProduct = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -107,34 +125,38 @@ const updateProduct = async (req, res) => {
             return res.status(404).json({ error: 'Product not found' });
         }
 
-        const { name, price, description, category, countInStock, bestseller } = req.body;
+        const { name, price, description, category, countInStock, bestseller, keepExistingImages } = req.body;
         let imageUrls = [...product.image];
 
-        if (req.files) {
+        // Only handle images if new ones are uploaded and we're not keeping existing ones
+        if (req.files && !keepExistingImages) {
             const images = [];
             if (req.files.image1) images.push(req.files.image1[0]);
             if (req.files.image2) images.push(req.files.image2[0]);
             if (req.files.image3) images.push(req.files.image3[0]);
 
-            const uploadPromises = images.map(uploadToCloudinary);
-            const cloudinaryResults = await Promise.all(uploadPromises);
-            imageUrls = cloudinaryResults.map(result => result.secure_url);
+            if (images.length > 0) {
+                // Delete old images
+                const deletePromises = product.image.map(imageUrl => {
+                    const publicId = imageUrl.split('/').pop().split('.')[0];
+                    return cloudinaryInstance.uploader.destroy(`products/${publicId}`);
+                });
+                await Promise.all(deletePromises);
 
-            const deletePromises = product.image.map(imageUrl => {
-                const publicId = imageUrl.split('/').pop().split('.')[0];
-                return cloudinaryInstance.uploader.destroy(`products/${publicId}`);
-            });
-            await Promise.all(deletePromises);
+                // Upload new images
+                const cloudinaryResults = await Promise.all(images.map(uploadToCloudinary));
+                imageUrls = cloudinaryResults.map(result => result.secure_url);
+            }
         }
 
         const updatedProduct = await Product.findByIdAndUpdate(
             req.params.id,
             {
                 name: name || product.name,
-                price: price || product.price,
+                price: price ? Number(price) : product.price,
                 description: description || product.description,
                 category: category || product.category,
-                countInStock: countInStock || product.countInStock,
+                countInStock: countInStock ? Number(countInStock) : product.countInStock,
                 bestseller: bestseller === 'true',
                 image: imageUrls
             },
@@ -144,10 +166,11 @@ const updateProduct = async (req, res) => {
         res.json(updatedProduct);
     } catch (error) {
         console.error('Update product error:', error);
-        res.status(500).json({ error: 'Error updating product' });
+        res.status(500).json({ error: error.message || 'Error updating product' });
     }
 };
 
+// ...existing code...
 const toggleActive = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);

@@ -4,12 +4,15 @@ import { ProductItem } from "../components/ProductItem";
 import { Title } from "../components/Title";
 
 export const Collection = () => {
+  // Context and State
   const { products, search, showSearch } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [category, setCategory] = useState([]);
   const [sortType, setSortType] = useState("relevant");
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Filter Functions
   const toggleCategory = (e) => {
     const value = e.target.value;
     setCategory((prev) =>
@@ -32,35 +35,49 @@ export const Collection = () => {
   };
 
   const applyFilter = () => {
-    let filtered = [...products];
+    setIsLoading(true);
+    let filtered = products || [];
 
-    // Apply search filter
+    // Search Filter
     if (showSearch && search) {
       filtered = filtered.filter((item) =>
         item.name.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    // Apply category filter
+    // Category Filter
     if (category.length > 0) {
       filtered = filtered.filter((item) => category.includes(item.category));
     }
 
-    // Apply sorting
+    // Sort Products
     filtered = sortProducts(filtered);
-
     setFilteredProducts(filtered);
+    setIsLoading(false);
   };
 
+  // Effect Hooks
   useEffect(() => {
     applyFilter();
   }, [category, search, showSearch, products, sortType]);
 
-  const categories = ["Boucle d'oreilles", "Bague", "Bracelet", "Sac",];
+  // Categories
+  const categories = [
+    "Boucle d'oreilles",
+    "Bague",
+    "Collier",
+    "Bracelet",
+    "Sac",
+  ];
+
+  // Loading State
+  if (isLoading && !products?.length) {
+    return <div className="text-center py-10">Chargement...</div>;
+  }
 
   return (
     <div className="flex flex-col sm:flex-row gap-6 pt-10 border-t border-gray-300">
-      {/* Filter section */}
+      {/* Filter Section */}
       <div className="min-w-[250px]">
         <p
           onClick={() => setShowFilter(!showFilter)}
@@ -91,7 +108,7 @@ export const Collection = () => {
         </div>
       </div>
 
-      {/* Products section */}
+      {/* Products Grid */}
       <div className="flex-1">
         <div className="flex justify-between items-center text-base sm:text-xl mb-6">
           <Title text1={"Toute la "} text2={"Collection"} />
@@ -106,21 +123,27 @@ export const Collection = () => {
           </select>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((item) => (
-            <div
-              key={item._id}
-              className="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow p-4"
-            >
-              <ProductItem
-                id={item._id}
-                image={item.image[0]}
-                name={item.name}
-                price={item.price}
-              />
-            </div>
-          ))}
-        </div>
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-10 text-gray-500">
+            Aucun produit trouvé
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredProducts.map((item) => (
+              <div
+                key={item._id}
+                className="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow p-4"
+              >
+                <ProductItem
+                  id={item._id}
+                  image={item.image[0]}
+                  name={item.name}
+                  price={item.price}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
