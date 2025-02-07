@@ -52,7 +52,7 @@ export const Product = () => {
 
           <button
             onClick={() => addToCart(productData._id, 1)}
-            className="bg-black text-white px-6 py-3 text-sm rounded-md shadow-md hover:bg-gray-800 transition-all"
+            className="bg-rose-600 text-white px-6 py-3 text-sm rounded-md shadow-md hover:bg-gray-800 transition-all"
           >
             Ajouter au panier
           </button>
