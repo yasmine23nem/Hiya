@@ -34,7 +34,7 @@ const SpecialMomentGrid = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
         <div className="md:col-span-1">
           <h1 className="text-5xl font-bold text-gray-900">
-            Pour des <br /> moments spéciaux
+            Pour des<br /> moments spéciaux
           </h1>
         </div>
         <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-4">
