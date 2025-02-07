@@ -161,11 +161,12 @@ const List = ({ token }) => {
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {/* Desktop Headers */}
-        <div className="hidden md:grid md:grid-cols-[1fr_2fr_1fr_1fr_1fr_1fr_1fr] gap-4 p-4 bg-gray-50 font-medium">
+        <div className="hidden md:grid md:grid-cols-[1fr_2fr_1fr_1fr_1fr_1fr_1fr_1fr] gap-4 p-4 bg-gray-50 font-medium">
           <div>Image</div>
           <div>Nom</div>
           <div>Catégorie</div>
           <div>Prix</div>
+          <div>Stock</div>
           <div>Status</div>
           <div>Visibilité</div>
           <div>Actions</div>
@@ -190,6 +191,9 @@ const List = ({ token }) => {
                   <p className="text-gray-600">{product.category}</p>
                   <p className="text-lg font-semibold mt-1">
                     {product.price}DA
+                  </p>
+                  <p className="text-gray-600 mt-1">
+                    Stock: {product.countInStock}
                   </p>
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center">
@@ -242,7 +246,7 @@ const List = ({ token }) => {
             </div>
 
             {/* Desktop View */}
-            <div className="hidden md:grid md:grid-cols-[1fr_2fr_1fr_1fr_1fr_1fr_1fr] gap-4 p-4 items-center">
+            <div className="hidden md:grid md:grid-cols-[1fr_2fr_1fr_1fr_1fr_1fr_1fr_1fr] gap-4 p-4 items-center">
               <img
                 src={product.image[0]}
                 alt={product.name}
@@ -257,6 +261,7 @@ const List = ({ token }) => {
               </div>
               <div>{product.category}</div>
               <div>{product.price}DA</div>
+              <div>{product.countInStock}</div>
               <div>
                 {product.active ? (
                   <span className="text-green-600 flex items-center gap-1">

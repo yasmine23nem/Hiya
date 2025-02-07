@@ -12,6 +12,7 @@ const Add = ({ token }) => {
     category: "Bracelet",
     price: "",
     bestseller: false,
+    countInStock: "", // Add this line
   });
   const [images, setImages] = useState({
     image1: null,
@@ -54,8 +55,6 @@ const Add = ({ token }) => {
         submitData.append(key, value);
       });
 
-      submitData.append("countInStock", 10);
-
       const response = await axios.post(
         `${backendUrl}/api/product/create`,
         submitData,
@@ -75,6 +74,7 @@ const Add = ({ token }) => {
           category: "Bracelet",
           price: "",
           bestseller: false,
+          countInStock: "", // Add this line
         });
         setImages({
           image1: null,
@@ -186,6 +186,20 @@ const Add = ({ token }) => {
                 value={formData.price}
                 onChange={handleInputChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Stock
+              </label>
+              <input
+                type="number"
+                name="countInStock"
+                value={formData.countInStock}
+                onChange={handleInputChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                min="0"
                 required
               />
             </div>
