@@ -104,8 +104,7 @@ const Add = ({ token }) => {
                 submitData,
                 {
                     headers: {
-                        token,
-                        "Content-Type": "multipart/form-data",
+                        token
                     },
                     onUploadProgress: (progressEvent) => {
                         const percentCompleted = Math.round(
