@@ -175,13 +175,13 @@ const List = ({ token }) => {
             {/* Mobile View */}
             <div className="block md:hidden p-4">
               <div
-                className="flex gap-4 cursor-pointer"
+                className="flex flex-col gap-4 cursor-pointer"
                 onClick={() => setShowProductDetail(product)}
               >
                 <img
                   src={product.image[0]}
                   alt={product.name}
-                  className="w-24 h-24 object-cover rounded"
+                  className="w-full h-48 object-cover rounded"
                 />
                 <div className="flex-1">
                   <h3 className="font-medium text-lg">{product.name}</h3>
@@ -271,9 +271,7 @@ const List = ({ token }) => {
                   checked={product.active}
                   onChange={() => toggleActive(product._id, product.active)}
                   disabled={updating === product._id}
-                  className={`relative inline-flex h-6 w-11 items
-                  
-                  -center rounded-full transition-colors focus:outline-none ${
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
                     product.active ? "bg-green-600" : "bg-red-600"
                   }`}
                 >
