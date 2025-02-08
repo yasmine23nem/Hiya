@@ -20,7 +20,7 @@ const categories = [
   { img: collier, label: "COLLIERS", category: "Collier en argent véritable" },
   { img: sac, label: "SACS", category: "Sac" },
   { img: chem, label: "VÊTEMENTS", category: "Vêtement" },
-  { img: val, label: "NOUVEAUTÉS", category: "Nouveauté" },
+  { img: val, label: "NOUVEAUTÉS", category: "Nouveautés" },
 ];
 
 const containerVariants = {
