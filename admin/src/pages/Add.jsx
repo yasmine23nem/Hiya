@@ -1,22 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import imageCompression from "browser-image-compression";
-import { useEffect } from "react";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Add = ({ token }) => {
   const [categories, setCategories] = useState([]);
-
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    category: "Bracelet en argent véritable",
+    category: "",
     price: "",
     bestseller: false,
     countInStock: "",
+  });
+  const [images, setImages] = useState({
+    image1: null,
+    image2: null,
+    image3: null,
   });
 
   useEffect(() => {
@@ -24,7 +27,6 @@ const Add = ({ token }) => {
       try {
         const response = await axios.get(`${backendUrl}/api/categories`);
         setCategories(response.data);
-        // Set default category if categories are available
         if (response.data.length > 0) {
           setFormData((prev) => ({
             ...prev,
@@ -36,14 +38,8 @@ const Add = ({ token }) => {
         toast.error("Erreur lors du chargement des catégories");
       }
     };
-
     fetchCategories();
   }, []);
-  const [images, setImages] = useState({
-    image1: null,
-    image2: null,
-    image3: null,
-  });
 
   const handleImageChange = async (e, key) => {
     const file = e.target.files[0];
@@ -59,7 +55,6 @@ const Add = ({ token }) => {
           maxWidthOrHeight: 1024,
           useWebWorker: true,
         };
-
         const compressedFile = await imageCompression(file, options);
         setImages((prev) => ({
           ...prev,
@@ -92,39 +87,30 @@ const Add = ({ token }) => {
         !formData.category
       ) {
         toast.error("Veuillez remplir tous les champs obligatoires");
-        setLoading(false);
         return;
       }
 
       if (!images.image1) {
         toast.error("Au moins une image est requise");
-        setLoading(false);
         return;
       }
 
       const submitData = new FormData();
 
-      // Append images
+      // Append images first
       Object.entries(images).forEach(([key, file]) => {
         if (file) {
           submitData.append(key, file);
         }
       });
-      const selectedCategory = categories.find(
-        (cat) => cat.name === formData.category
-      );
-      Object.entries(formData).forEach(([key, value]) => {
-        if (key === "category" && selectedCategory) {
-          submitData.append(key, selectedCategory.name);
-        } else {
-          submitData.append(key, value);
-        }
-      });
 
-      // Append form data
-      Object.entries(formData).forEach(([key, value]) => {
-        submitData.append(key, value);
-      });
+      // Append form data with proper type conversion
+      submitData.append("name", String(formData.name).trim());
+      submitData.append("description", String(formData.description).trim());
+      submitData.append("category", String(formData.category).trim());
+      submitData.append("price", Number(formData.price));
+      submitData.append("countInStock", Number(formData.countInStock));
+      submitData.append("bestseller", formData.bestseller);
 
       const response = await axios.post(
         `${backendUrl}/api/product/create`,
@@ -132,6 +118,7 @@ const Add = ({ token }) => {
         {
           headers: {
             token,
+            "Content-Type": "multipart/form-data",
           },
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round(
@@ -149,40 +136,45 @@ const Add = ({ token }) => {
       if (response.data) {
         toast.dismiss("uploadProgress");
         toast.success("Produit ajouté avec succès!");
-
-        // Reset form
-        setFormData({
-          name: "",
-          description: "",
-          category: "Bracelet en argent véritable",
-          price: "",
-          bestseller: false,
-          countInStock: "",
-        });
-        setImages({
-          image1: null,
-          image2: null,
-          image3: null,
-        });
+        resetForm();
       }
     } catch (error) {
       toast.dismiss("uploadProgress");
       console.error("Error:", error);
-
-      if (error.code === "ECONNABORTED") {
-        toast.error("La requête a pris trop de temps. Veuillez réessayer.");
-      } else if (error.response?.status === 413) {
-        toast.error("Les images sont trop volumineuses");
-      } else if (error.response?.status === 401) {
-        toast.error("Session expirée, veuillez vous reconnecter");
-      } else {
-        toast.error(
-          error.response?.data?.error ||
-            "Erreur lors de l'ajout. Veuillez réessayer."
-        );
-      }
+      handleError(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      description: "",
+      category: categories[0]?.name || "",
+      price: "",
+      bestseller: false,
+      countInStock: "",
+    });
+    setImages({
+      image1: null,
+      image2: null,
+      image3: null,
+    });
+  };
+
+  const handleError = (error) => {
+    if (error.code === "ECONNABORTED") {
+      toast.error("La requête a pris trop de temps. Veuillez réessayer.");
+    } else if (error.response?.status === 413) {
+      toast.error("Les images sont trop volumineuses");
+    } else if (error.response?.status === 401) {
+      toast.error("Session expirée, veuillez vous reconnecter");
+    } else {
+      toast.error(
+        error.response?.data?.error ||
+          "Erreur lors de l'ajout. Veuillez réessayer."
+      );
     }
   };
 
@@ -191,7 +183,6 @@ const Add = ({ token }) => {
       <h2 className="text-2xl font-bold mb-6">Ajouter un nouveau produit</h2>
 
       <form onSubmit={onSubmit} className="space-y-6">
-        {/* Images Upload */}
         <div className="grid grid-cols-3 gap-4">
           {["image1", "image2", "image3"].map((key) => (
             <div key={key} className="relative">
@@ -222,7 +213,6 @@ const Add = ({ token }) => {
           ))}
         </div>
 
-        {/* Rest of your form remains unchanged */}
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -284,8 +274,11 @@ const Add = ({ token }) => {
                 onChange={handleInputChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                 required
+                min="0"
+                step="0.01"
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Stock
@@ -308,7 +301,7 @@ const Add = ({ token }) => {
               name="bestseller"
               checked={formData.bestseller}
               onChange={handleInputChange}
-              className="h-4 w-4 text-blue-600"
+              className="h-4 w-4 text-rose-600"
             />
             <label className="ml-2 text-sm text-gray-700">
               Meilleure vente
@@ -319,7 +312,7 @@ const Add = ({ token }) => {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-rose-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+          className={`w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 ${
             loading ? "opacity-75 cursor-not-allowed" : ""
           }`}
         >
