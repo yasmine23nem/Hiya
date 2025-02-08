@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
-import { useLocation } from "react-router-dom"; // Add this import
-
+import { useLocation } from "react-router-dom";
+import axios from "axios";
 import { ProductItem } from "../components/ProductItem";
 import { Title } from "../components/Title";
 
@@ -10,29 +10,31 @@ export const Collection = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [category, setCategory] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [sortType, setSortType] = useState("relevant");
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const selectedCategory = location.state?.selectedCategory;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  // Fetch categories from backend
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${backendUrl}/api/categories`);
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (selectedCategory) {
       setCategory([selectedCategory]);
     }
   }, [selectedCategory]);
-
-  const categories = {
-    "Boucle d'oreilles": [
-      "Boucle d'oreilles en argent véritable",
-      "Boucle d'oreilles en argent plaqué",
-    ],
-    Bague: ["Bague en argent véritable", "Bague en argent plaqué"],
-    Collier: ["Collier en argent véritable", "Collier en argent plaqué"],
-    Bracelet: ["Bracelet en argent véritable", "Bracelet en argent plaqué"],
-
-    Sac: ["Sac"],
-    Nouveautés: ["Nouveautés"],
-  };
 
   const toggleCategory = (e) => {
     const value = e.target.value;
@@ -118,36 +120,30 @@ export const Collection = () => {
               Catégories
             </p>
             <div className="flex flex-col gap-3 text-sm text-gray-700">
-              {Object.entries(categories).map(([mainCat, subCats]) => (
-                <div key={mainCat} className="mb-4">
-                  <p className="font-medium mb-2">{mainCat}</p>
-                  <div className="ml-4 space-y-2">
-                    {subCats.map((subCat) => (
-                      <div className="flex gap-2 items-center" key={subCat}>
-                        <input
-                          type="checkbox"
-                          checked={category.includes(subCat)}
-                          className="w-4 h-4 text-rose-600 border-gray-300 rounded focus:ring-rose-500"
-                          value={subCat}
-                          onChange={toggleCategory}
-                        />
-                        <label className="text-sm">{subCat}</label>
-                      </div>
-                    ))}
-                  </div>
+              {categories.map((cat) => (
+                <div className="flex gap-2 items-center" key={cat._id}>
+                  <input
+                    type="checkbox"
+                    checked={category.includes(cat.name)}
+                    className="w-4 h-4 text-rose-600 border-gray-300 rounded focus:ring-rose-500"
+                    value={cat.name}
+                    onChange={toggleCategory}
+                  />
+                  <label className="text-sm">{cat.label}</label>
                 </div>
               ))}
             </div>
           </div>
         )}
       </div>
+
       <div className="flex-1">
-        <div className="flex justify-between items-center text-base sm:text-xl mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
           <Title text1={"Toute la "} text2={"Collection"} />
           <select
             value={sortType}
             onChange={(e) => setSortType(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+            className="w-full sm:w-auto border border-gray-300 rounded-lg px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
           >
             <option value="relevant">Trier par: Pertinent</option>
             <option value="high-low">Trier par: Prix décroissant</option>
