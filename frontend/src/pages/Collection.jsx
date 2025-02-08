@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
+import { useLocation } from "react-router-dom"; // Add this import
+
 import { ProductItem } from "../components/ProductItem";
 import { Title } from "../components/Title";
 
@@ -10,6 +12,14 @@ export const Collection = () => {
   const [category, setCategory] = useState([]);
   const [sortType, setSortType] = useState("relevant");
   const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation();
+  const selectedCategory = location.state?.selectedCategory;
+
+  useEffect(() => {
+    if (selectedCategory) {
+      setCategory([selectedCategory]);
+    }
+  }, [selectedCategory]);
 
   const categories = {
     "Boucle d'oreilles": [
@@ -19,7 +29,9 @@ export const Collection = () => {
     Bague: ["Bague en argent véritable", "Bague en argent plaqué"],
     Collier: ["Collier en argent véritable", "Collier en argent plaqué"],
     Bracelet: ["Bracelet en argent véritable", "Bracelet en argent plaqué"],
+
     Sac: ["Sac"],
+    Nouveautés: ["Nouveautés"],
   };
 
   const toggleCategory = (e) => {
