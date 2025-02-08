@@ -1,6 +1,11 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { MdAddCircle, MdList, MdShoppingCart } from "react-icons/md";
+import {
+  MdAddCircle,
+  MdList,
+  MdShoppingCart,
+  MdCategory,
+} from "react-icons/md";
 
 export const Sidebar = () => {
   const linkClass = ({ isActive }) =>
@@ -24,6 +29,11 @@ export const Sidebar = () => {
         <NavLink className={linkClass} to="/orders">
           <MdShoppingCart className="w-5 h-5 text-burgundy-700" />
           <p className="hidden md:block text-burgundy-800">Commandes</p>
+        </NavLink>
+
+        <NavLink className={linkClass} to="/categories">
+          <MdCategory className="w-5 h-5 text-burgundy-700" />
+          <p className="hidden md:block text-burgundy-800">Catégories</p>
         </NavLink>
       </div>
     </div>

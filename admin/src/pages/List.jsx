@@ -29,27 +29,27 @@ const List = ({ token }) => {
     newImages: [],
   });
 
-  const categories = {
-    "Boucle d'oreilles": [
-      "Boucle d'oreilles en argent véritable",
-      "Boucle d'oreilles en argent plaqué",
-    ],
-    Bague: ["Bague en argent véritable", "Bague en argent plaqué"],
-    Collier: ["Collier en argent véritable", "Collier en argent plaqué"],
-    Bracelet: ["Bracelet en argent véritable", "Bracelet en argent plaqué"],
-    Sac: ["Sac"],
+  const [categories, setCategories] = useState([]);
+  // Add function to fetch categories
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/api/categories`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      toast.error("Erreur lors du chargement des catégories");
+    }
   };
 
-  // Filter products based on selected category
+  // Modify your useEffect to fetch both products and categories
   useEffect(() => {
-    if (selectedCategory === "all") {
-      setFilteredList(list);
-    } else {
-      setFilteredList(
-        list.filter((product) => product.category === selectedCategory)
-      );
-    }
-  }, [selectedCategory, list]);
+    const fetchData = async () => {
+      setLoading(true);
+      await Promise.all([fetchProducts(), fetchCategories()]);
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
 
   // API Functions
   const fetchProducts = async () => {
@@ -162,6 +162,17 @@ const List = ({ token }) => {
       toast.error("Erreur lors de la suppression");
     }
   };
+  // Add this useEffect after your other useEffects
+  useEffect(() => {
+    if (selectedCategory === "all") {
+      setFilteredList(list);
+    } else {
+      const filtered = list.filter(
+        (product) => product.category === selectedCategory
+      );
+      setFilteredList(filtered);
+    }
+  }, [selectedCategory, list]);
 
   useEffect(() => {
     fetchProducts();
@@ -171,31 +182,27 @@ const List = ({ token }) => {
 
   return (
     <div className="p-4 md:p-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
         <h2 className="text-xl md:text-2xl font-bold">
           Liste des produits ({filteredList.length} produits)
         </h2>
 
-        <div className="mt-4 md:mt-0 flex items-center gap-4">
+        <div className="w-full md:w-auto">
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full md:w-auto min-w-[200px] border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500"
           >
             <option value="all">Toutes les catégories</option>
-            {Object.entries(categories).map(([mainCat, subCats]) => (
-              <optgroup key={mainCat} label={mainCat}>
-                {subCats.map((subCat) => (
-                  <option key={subCat} value={subCat}>
-                    {subCat} (
-                    {
-                      list.filter((product) => product.category === subCat)
-                        .length
-                    }
-                    )
-                  </option>
-                ))}
-              </optgroup>
+            {categories.map((category) => (
+              <option key={category._id} value={category.name}>
+                {category.label} (
+                {
+                  list.filter((product) => product.category === category.name)
+                    .length
+                }
+                )
+              </option>
             ))}
           </select>
         </div>
@@ -407,14 +414,11 @@ const List = ({ token }) => {
                     }
                     className="w-full border rounded p-2"
                   >
-                    {Object.entries(categories).map(([mainCat, subCats]) => (
-                      <optgroup key={mainCat} label={mainCat}>
-                        {subCats.map((subCat) => (
-                          <option key={subCat} value={subCat}>
-                            {subCat}
-                          </option>
-                        ))}
-                      </optgroup>
+                    <option value="">Sélectionner une catégorie</option>
+                    {categories.map((category) => (
+                      <option key={category._id} value={category.name}>
+                        {category.label}
+                      </option>
                     ))}
                   </select>
                 </div>

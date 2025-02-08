@@ -11,6 +11,7 @@ import { Login } from "./components/Login.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { use } from "react";
+import Categories from "./pages/Categories";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -39,6 +40,10 @@ const App = () => {
                 <Route
                   path="/orders"
                   element={<Orders token={token}></Orders>}
+                />
+                <Route
+                  path="/categories"
+                  element={<Categories token={token} />}
                 />
               </Routes>
             </div>

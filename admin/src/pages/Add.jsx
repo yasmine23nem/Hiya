@@ -2,20 +2,12 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import imageCompression from "browser-image-compression";
+import { useEffect } from "react";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Add = ({ token }) => {
-  const categories = {
-    "Boucle d'oreilles": [
-      "Boucle d'oreilles en argent véritable",
-      "Boucle d'oreilles en argent plaqué",
-    ],
-    Bague: ["Bague en argent véritable", "Bague en argent plaqué"],
-    Collier: ["Collier en argent véritable", "Collier en argent plaqué"],
-    Bracelet: ["Bracelet en argent véritable", "Bracelet en argent plaqué"],
-    Sac: ["Sac"],
-  };
+  const [categories, setCategories] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -27,6 +19,26 @@ const Add = ({ token }) => {
     countInStock: "",
   });
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${backendUrl}/api/categories`);
+        setCategories(response.data);
+        // Set default category if categories are available
+        if (response.data.length > 0) {
+          setFormData((prev) => ({
+            ...prev,
+            category: response.data[0].name,
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        toast.error("Erreur lors du chargement des catégories");
+      }
+    };
+
+    fetchCategories();
+  }, []);
   const [images, setImages] = useState({
     image1: null,
     image2: null,
@@ -96,6 +108,16 @@ const Add = ({ token }) => {
       Object.entries(images).forEach(([key, file]) => {
         if (file) {
           submitData.append(key, file);
+        }
+      });
+      const selectedCategory = categories.find(
+        (cat) => cat.name === formData.category
+      );
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === "category" && selectedCategory) {
+          submitData.append(key, selectedCategory.name);
+        } else {
+          submitData.append(key, value);
         }
       });
 
@@ -240,15 +262,13 @@ const Add = ({ token }) => {
                 value={formData.category}
                 onChange={handleInputChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                required
               >
-                {Object.entries(categories).map(([mainCat, subCats]) => (
-                  <optgroup key={mainCat} label={mainCat}>
-                    {subCats.map((subCat) => (
-                      <option key={subCat} value={subCat}>
-                        {subCat}
-                      </option>
-                    ))}
-                  </optgroup>
+                <option value="">Sélectionner une catégorie</option>
+                {categories.map((category) => (
+                  <option key={category._id} value={category.name}>
+                    {category.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -299,7 +319,7 @@ const Add = ({ token }) => {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+          className={`w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-rose-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
             loading ? "opacity-75 cursor-not-allowed" : ""
           }`}
         >
