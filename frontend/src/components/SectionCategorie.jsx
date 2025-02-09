@@ -7,8 +7,8 @@ import boucle from "../assets/boucle.jpg";
 import collier from "../assets/collier.jpg";
 import val from "../assets/val.jpg";
 import sac from "../assets/sac.png";
-import chem from "../assets/chem.png";
-
+import vetements from "../assets/vetements.jpg";
+import sacs from "../assets/sacs.jpg";
 const categories = [
   { img: bra, label: "BRACELETS", category: "Bracelet en argent véritable" },
   { img: rr, label: "BAGUES", category: "Bague en argent véritable" },
@@ -18,8 +18,8 @@ const categories = [
     category: "Boucle d'oreilles en argent véritable",
   },
   { img: collier, label: "COLLIERS", category: "Collier en argent véritable" },
-  { img: sac, label: "SACS", category: "Sac" },
-  { img: chem, label: "VÊTEMENTS", category: "Vêtement" },
+  { img: sacs, label: "SACS", category: "Sac" },
+  { img: vetements, label: "VÊTEMENTS", category: "Vêtement" },
   { img: val, label: "NOUVEAUTÉS", category: "Nouveautés" },
 ];
 
