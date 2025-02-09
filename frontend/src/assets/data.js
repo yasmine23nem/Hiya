@@ -9,20 +9,25 @@ import fs from '../assets/fs.png';
 import vid2 from '../assets/vid2.mp4';
 import rem from '../assets/rem.png';
 import yy from '../assets/yy.png';
+import slider from '../assets/slider.png';
+import sl from '../assets/sl.png';
+
 
 export const SlideItem = [
     {
         id: 1,
         img: rouge,
-        title: "Elle",
-        desc: "Elle est le langage du cœur, dans chaque battement et chaque lettre",
+        title: "Hiya",
+        desc: "Un nom simple,mais puissant, qui raconte une histoire unique",
+
         bg: "E11D48", // Red background
     },
     {
         id: 2,
-        img: yy,
-        title: "Hiya",
-        desc: "Un nom simple,mais puissant, qui raconte une histoire unique",
+        img: sl,
+        desc: "Elle est le langage du cœur, dans chaque battement et chaque lettre",
+
+        title: "Elle",
         bg: "ffffff", // White background
     },
 

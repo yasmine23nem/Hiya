@@ -7,21 +7,11 @@ import boucle from "../assets/boucle.jpg";
 import collier from "../assets/collier.jpg";
 import val from "../assets/val.jpg";
 import sac from "../assets/sac.png";
-import vetements from "../assets/vetements.jpg";
+import robe from "../assets/robe.jpg";
+import chemise from "../assets/chemise.png";
+import jupe from "../assets/jupe.jpg";
 import sacs from "../assets/sacs.jpg";
-const categories = [
-  { img: bra, label: "BRACELETS", category: "Bracelet en argent véritable" },
-  { img: rr, label: "BAGUES", category: "Bague en argent véritable" },
-  {
-    img: boucle,
-    label: "BOUCLES D'OREILLES",
-    category: "Boucle d'oreilles en argent véritable",
-  },
-  { img: collier, label: "COLLIERS", category: "Collier en argent véritable" },
-  { img: sacs, label: "SACS", category: "Sac" },
-  { img: vetements, label: "VÊTEMENTS", category: "Vêtement" },
-  { img: val, label: "NOUVEAUTÉS", category: "Nouveautés" },
-];
+import tshirt from "../assets/tshirt.png";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -75,6 +65,23 @@ const imageVariants = {
   },
 };
 
+const categories = [
+  { img: bra, label: "BRACELETS", category: "Bracelet en argent véritable" },
+  { img: rr, label: "BAGUES", category: "Bague en argent véritable" },
+  {
+    img: boucle,
+    label: "BOUCLES D'OREILLES",
+    category: "Boucle d'oreilles en argent véritable",
+  },
+  { img: collier, label: "COLLIERS", category: "Collier en argent véritable" },
+  { img: sacs, label: "SACS", category: "Sac" },
+  { img: robe, label: "ROBES", category: "Robe" },
+  { img: chemise, label: "CHEMISES", category: "Chemise" },
+  { img: jupe, label: "JUPES", category: "Jupe" },
+  { img: tshirt, label: "T-SHIRTS", category: "T-shirt" },
+  { img: val, label: "NOUVEAUTÉS", category: "Nouveautés" },
+];
+
 const SectionCategorie = () => {
   const navigate = useNavigate();
 
@@ -86,8 +93,7 @@ const SectionCategorie = () => {
 
   return (
     <motion.div
-      // Change space-x-6 to space-x-12 for more spacing
-      className="flex overflow-x-auto py-10 space-x-10 px-4 md:px-8"
+      className="flex overflow-x-auto py-10 space-x-10 px-4 md:px-8 scrollbar-hide"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -110,7 +116,7 @@ const SectionCategorie = () => {
           <motion.img
             src={item.img}
             alt={item.label}
-            className="w-24 h-24 sm:w-32 sm:h-32 object-contain rounded-lg shadow-md"
+            className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg shadow-md"
             variants={imageVariants}
             whileHover="hover"
           />
