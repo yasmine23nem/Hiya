@@ -8,6 +8,8 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const Add = ({ token }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -15,7 +17,17 @@ const Add = ({ token }) => {
     price: "",
     bestseller: false,
     countInStock: "",
+    sizes: [], // Ajouter le champ sizes
   });
+  // Ajouter la fonction de gestion des tailles
+  const handleSizeChange = (size) => {
+    setFormData((prev) => ({
+      ...prev,
+      sizes: prev.sizes.includes(size)
+        ? prev.sizes.filter((s) => s !== size)
+        : [...prev.sizes, size],
+    }));
+  };
   const [images, setImages] = useState({
     image1: null,
     image2: null,
@@ -111,6 +123,10 @@ const Add = ({ token }) => {
       submitData.append("price", Number(formData.price));
       submitData.append("countInStock", Number(formData.countInStock));
       submitData.append("bestseller", formData.bestseller);
+      // Ajouter les tailles si elles sont sélectionnées
+      if (formData.sizes.length > 0) {
+        submitData.append("sizes", JSON.stringify(formData.sizes));
+      }
 
       const response = await axios.post(
         `${backendUrl}/api/product/create`,
@@ -155,6 +171,7 @@ const Add = ({ token }) => {
       price: "",
       bestseller: false,
       countInStock: "",
+      sizes: [], // Réinitialiser les tailles
     });
     setImages({
       image1: null,
@@ -292,6 +309,29 @@ const Add = ({ token }) => {
                 min="0"
                 required
               />
+            </div>
+            {/* Ajouter après le champ countInStock */}
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tailles disponibles (optionnel)
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {SIZES.map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => handleSizeChange(size)}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors
+          ${
+            formData.sizes.includes(size)
+              ? "bg-rose-600 text-white"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+          }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

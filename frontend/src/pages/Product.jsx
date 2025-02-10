@@ -8,16 +8,27 @@ export const Product = () => {
   const { products, addToCart } = useContext(ShopContext);
   const [productData, setProductData] = useState(null);
   const [image, setImage] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
 
   useEffect(() => {
     const product = products.find((item) => item._id === productId);
     if (product) {
       setProductData(product);
       setImage(product.image[0]);
+      // Réinitialiser la taille sélectionnée lors du changement de produit
+      setSelectedSize("");
     }
   }, [productId, products]);
 
   if (!productData) return <div className="opacity-0">No product found</div>;
+
+  const handleAddToCart = () => {
+    if (productData.sizes && productData.sizes.length > 0 && !selectedSize) {
+      alert("Veuillez sélectionner une taille");
+      return;
+    }
+    addToCart(productData._id, 1, selectedSize);
+  };
 
   return (
     <div className="border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100 px-4 md:px-10">
@@ -46,12 +57,37 @@ export const Product = () => {
         <div className="flex-1 space-y-4">
           <h1 className="text-3xl font-bold">{productData.name}</h1>
           <p className="text-2xl font-semibold text-gray-800">
-            {productData.currency} {productData.price}
+            {productData.price}DA
           </p>
           <p className="text-gray-600">{productData.description}</p>
 
+          {/* Affichage des tailles si elles existent */}
+          {productData.sizes && productData.sizes.length > 0 && (
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-gray-700">
+                Tailles disponibles
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {productData.sizes.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
+                      ${
+                        selectedSize === size
+                          ? "bg-rose-600 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <button
-            onClick={() => addToCart(productData._id, 1)}
+            onClick={handleAddToCart}
             className="bg-rose-600 text-white px-6 py-3 text-sm rounded-md shadow-md hover:bg-gray-800 transition-all"
           >
             Ajouter au panier

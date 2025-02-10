@@ -16,6 +16,8 @@ const List = ({ token }) => {
   const [updating, setUpdating] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [sizes] = useState(["XS", "S", "M", "L", "XL", "XXL"]);
+
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showProductDetail, setShowProductDetail] = useState(null);
   const [editFormData, setEditFormData] = useState({
@@ -27,6 +29,7 @@ const List = ({ token }) => {
     bestseller: false,
     existingImages: [],
     newImages: [],
+    sizes: [], // Add this line
   });
 
   const [categories, setCategories] = useState([]);
@@ -77,6 +80,7 @@ const List = ({ token }) => {
       bestseller: product.bestseller,
       existingImages: product.image,
       newImages: [],
+      sizes: product.sizes || [], // Add this line
     });
     setShowEditModal(true);
   };
@@ -84,9 +88,10 @@ const List = ({ token }) => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     const formData = new FormData();
+    formData.append("sizes", JSON.stringify(editFormData.sizes));
 
     Object.keys(editFormData).forEach((key) => {
-      if (!["existingImages", "newImages"].includes(key)) {
+      if (!["existingImages", "newImages", "sizes"].includes(key)) {
         formData.append(key, editFormData[key]);
       }
     });
@@ -216,6 +221,8 @@ const List = ({ token }) => {
           <div>Catégorie</div>
           <div>Prix</div>
           <div>Stock</div>
+          <div>Tailles</div>
+
           <div>Status</div>
           <div>Visibilité</div>
           <div>Actions</div>
@@ -241,8 +248,15 @@ const List = ({ token }) => {
                   <p className="text-lg font-semibold mt-1">
                     {product.price}DA
                   </p>
+
                   <p className="text-gray-600 mt-1">
                     Stock: {product.countInStock}
+                  </p>
+                  <p className="text-gray-600 mt-1">
+                    Tailles:{" "}
+                    {product.sizes?.length > 0
+                      ? product.sizes.join(", ")
+                      : "Aucune taille"}
                   </p>
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center">
@@ -311,6 +325,20 @@ const List = ({ token }) => {
               <div>{product.category}</div>
               <div>{product.price}DA</div>
               <div>{product.countInStock}</div>
+              <div className="hidden md:grid md:grid-cols-[1fr_2fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] gap-4 p-4 items-center">
+                {/* ...existing image, name, category, price, stock columns... */}
+                <div className="flex flex-wrap gap-1">
+                  {product.sizes?.map((size) => (
+                    <span
+                      key={size}
+                      className="px-2 py-1 text-xs bg-gray-100 rounded-full"
+                    >
+                      {size}
+                    </span>
+                  )) || "Aucune taille"}
+                </div>
+                {/* ...existing status, visibility, actions columns... */}
+              </div>
               <div>
                 {product.active ? (
                   <span className="text-green-600 flex items-center gap-1">
@@ -383,6 +411,31 @@ const List = ({ token }) => {
                     }
                     className="w-full border rounded p-2"
                   />
+                </div>
+                {/* Add this inside the edit modal form, before the submit buttons */}
+                <div className="col-span-2">
+                  <label className="block mb-1">Tailles disponibles</label>
+                  <div className="flex flex-wrap gap-2">
+                    {sizes.map((size) => (
+                      <label key={size} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={editFormData.sizes.includes(size)}
+                          onChange={(e) => {
+                            const updatedSizes = e.target.checked
+                              ? [...editFormData.sizes, size]
+                              : editFormData.sizes.filter((s) => s !== size);
+                            setEditFormData({
+                              ...editFormData,
+                              sizes: updatedSizes,
+                            });
+                          }}
+                          className="mr-1"
+                        />
+                        {size}
+                      </label>
+                    ))}
+                  </div>
                 </div>
                 <div>
                   <label className="block mb-1">Prix*</label>

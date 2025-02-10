@@ -10,7 +10,14 @@ const ProductDetail = ({ product, onClose }) => {
         <div className="p-6">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">{product.name}</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-bold">{product.name}</h2>
+              {product.bestseller && (
+                <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
+                  Bestseller
+                </span>
+              )}
+            </div>
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-full"
@@ -19,75 +26,107 @@ const ProductDetail = ({ product, onClose }) => {
             </button>
           </div>
 
-          {/* Content */}
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Images */}
+          {/* Main Content */}
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Left Column - Images */}
             <div className="space-y-4">
-              <div className="aspect-square rounded-lg overflow-hidden">
+              <div className="aspect-square rounded-lg overflow-hidden shadow-md">
                 <img
                   src={product.image[0]}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                {product.image.slice(1).map((img, idx) => (
-                  <div
-                    key={idx}
-                    className="aspect-square rounded-lg overflow-hidden"
-                  >
-                    <img
-                      src={img}
-                      alt={`${product.name} ${idx + 2}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
+              {product.image.length > 1 && (
+                <div className="grid grid-cols-3 gap-2">
+                  {product.image.slice(1).map((img, idx) => (
+                    <div
+                      key={idx}
+                      className="aspect-square rounded-lg overflow-hidden shadow-sm"
+                    >
+                      <img
+                        src={img}
+                        alt={`${product.name} ${idx + 2}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Details */}
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-semibold">Prix</h3>
-                <p className="text-2xl font-bold">{product.price}€</p>
+            {/* Right Column - Details */}
+            <div className="space-y-6">
+              {/* Price and Status Section */}
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700">Prix</h3>
+                  <p className="text-3xl font-bold text-rose-600">
+                    {product.price}DA
+                  </p>
+                </div>
+                <div className="text-right">
+                  <h3 className="text-lg font-semibold text-gray-700">
+                    Status
+                  </h3>
+                  {product.active ? (
+                    <span className="text-green-600 flex items-center gap-1 justify-end">
+                      <MdCheck className="w-5 h-5" /> Actif
+                    </span>
+                  ) : (
+                    <span className="text-red-600 flex items-center gap-1 justify-end">
+                      <MdClose className="w-5 h-5" /> Inactif
+                    </span>
+                  )}
+                </div>
               </div>
 
-              <div>
-                <h3 className="text-lg font-semibold">Catégorie</h3>
-                <p>{product.category}</p>
+              {/* Category and Stock */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700">
+                    Catégorie
+                  </h3>
+                  <p className="text-gray-600">{product.category}</p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700">Stock</h3>
+                  <p className="text-gray-600">{product.countInStock} unités</p>
+                </div>
               </div>
 
+              {/* Sizes */}
               <div>
-                <h3 className="text-lg font-semibold">Description</h3>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                  Tailles disponibles
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {product.sizes && product.sizes.length > 0 ? (
+                    product.sizes.map((size, index) => (
+                      <span
+                        key={index}
+                        className="px-4 py-2 bg-gray-100 rounded-full text-sm font-medium"
+                      >
+                        {size}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-400">
+                      Aucune taille spécifiée
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                  Description
+                </h3>
                 <p className="text-gray-600 whitespace-pre-line">
                   {product.description}
                 </p>
               </div>
-
-              <div>
-                <h3 className="text-lg font-semibold">Stock</h3>
-                <p>{product.countInStock} unités</p>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold">Status</h3>
-                {product.active ? (
-                  <span className="text-green-600 flex items-center gap-1">
-                    <MdCheck className="w-5 h-5" /> Actif
-                  </span>
-                ) : (
-                  <span className="text-red-600 flex items-center gap-1">
-                    <MdClose className="w-5 h-5" /> Inactif
-                  </span>
-                )}
-              </div>
-
-              {product.bestseller && (
-                <div className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full inline-block">
-                  Bestseller
-                </div>
-              )}
             </div>
           </div>
         </div>

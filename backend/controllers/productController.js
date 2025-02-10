@@ -3,14 +3,39 @@ import Product from '../models/productModel.js';
 import productModel from '../models/productModel.js';
 import sharp from 'sharp';
 
+const optimizeImage = async (file) => {
+    try {
+        const optimized = await sharp(file.path)
+            .resize(800, 800, { fit: 'inside' })
+            .jpeg({ quality: 80 })
+            .toBuffer();
+        return optimized;
+    } catch (error) {
+        console.error('Image optimization error:', error);
+        throw error;
+    }
+};
 
+const uploadToCloudinary = async (file) => {
+    const optimized = await optimizeImage(file);
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinaryInstance.uploader.upload_stream(
+            { folder: 'products' },
+            (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            }
+        );
+        uploadStream.end(optimized);
+    });
+};
 
 const createProduct = async (req, res) => {
     try {
         console.log('Starting product creation...');
         console.log('Request body:', req.body);
 
-        const { name, price, description, category, countInStock, bestseller } = req.body;
+        const { name, price, description, category, countInStock, bestseller, sizes } = req.body;
 
         // Log validation checks
         console.log('Validating required fields:', {
@@ -48,29 +73,6 @@ const createProduct = async (req, res) => {
 
         console.log('Processing images:', images.length);
 
-        const uploadToCloudinary = async (file) => {
-            console.log('Optimizing image:', file.originalname);
-            const optimized = await optimizeImage(file);
-
-            return new Promise((resolve, reject) => {
-                console.log('Uploading to Cloudinary:', file.originalname);
-                const uploadStream = cloudinaryInstance.uploader.upload_stream(
-                    { folder: 'products' },
-                    (error, result) => {
-                        if (error) {
-                            console.error('Cloudinary upload error:', error);
-                            reject(error);
-                        } else {
-                            console.log('Cloudinary upload success:', result.secure_url);
-                            resolve(result);
-                        }
-                    }
-                );
-                uploadStream.end(optimized);
-            });
-        };
-
-        console.log('Starting Cloudinary uploads...');
         const cloudinaryResults = await Promise.all(images.map(uploadToCloudinary));
         const imageUrls = cloudinaryResults.map(result => result.secure_url);
         console.log('Image URLs:', imageUrls);
@@ -84,6 +86,7 @@ const createProduct = async (req, res) => {
             countInStock: Number(countInStock) || 10,
             image: imageUrls,
             bestseller: bestseller === 'true',
+            sizes: sizes ? JSON.parse(sizes) : [], // gestion des tailles
             active: true
         });
         console.log('Product model created:', product);
@@ -99,6 +102,7 @@ const createProduct = async (req, res) => {
         res.status(500).json({ error: error.message || 'Server error' });
     }
 };
+
 const getProducts = async (req, res) => {
     try {
         const products = await productModel.find({ active: true });
@@ -108,6 +112,7 @@ const getProducts = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
 const getProductsAdmin = async (req, res) => {
     try {
         const products = await productModel.find();
@@ -130,36 +135,7 @@ const getProductById = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-// In updateProduct function
-// Add this at the top with other imports
-const optimizeImage = async (file) => {
-    try {
-        const optimized = await sharp(file.path)
-            .resize(800, 800, { fit: 'inside' })
-            .jpeg({ quality: 80 })
-            .toBuffer();
-        return optimized;
-    } catch (error) {
-        console.error('Image optimization error:', error);
-        throw error;
-    }
-};
 
-const uploadToCloudinary = async (file) => {
-    const optimized = await optimizeImage(file);
-    return new Promise((resolve, reject) => {
-        const uploadStream = cloudinaryInstance.uploader.upload_stream(
-            { folder: 'products' },
-            (error, result) => {
-                if (error) reject(error);
-                else resolve(result);
-            }
-        );
-        uploadStream.end(optimized);
-    });
-};
-
-// Replace the existing updateProduct function
 const updateProduct = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -167,7 +143,28 @@ const updateProduct = async (req, res) => {
             return res.status(404).json({ error: 'Product not found' });
         }
 
-        const { name, price, description, category, countInStock, bestseller, keepExistingImages } = req.body;
+        const {
+            name,
+            price,
+            description,
+            category,
+            countInStock,
+            bestseller,
+            keepExistingImages,
+            sizes
+        } = req.body;
+        // Vérification et parsing sécurisé des tailles
+        let parsedSizes = [];
+        try {
+            parsedSizes = sizes ? JSON.parse(sizes) : product.sizes;
+            // Vérifie que c'est bien un tableau
+            if (!Array.isArray(parsedSizes)) {
+                parsedSizes = product.sizes;
+            }
+        } catch (e) {
+            console.error('Error parsing sizes:', e);
+            parsedSizes = product.sizes;
+        }
         let imageUrls = [...product.image];
 
         // Only handle images if new ones are uploaded and we're not keeping existing ones
@@ -200,6 +197,7 @@ const updateProduct = async (req, res) => {
                 category: category || product.category,
                 countInStock: countInStock ? Number(countInStock) : product.countInStock,
                 bestseller: bestseller === 'true',
+                sizes: parsedSizes, // Utilisation des tailles parsées
                 image: imageUrls
             },
             { new: true }
@@ -212,7 +210,6 @@ const updateProduct = async (req, res) => {
     }
 };
 
-// ...existing code...
 const toggleActive = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
