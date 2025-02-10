@@ -16,7 +16,7 @@ const List = ({ token }) => {
   const [updating, setUpdating] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [sizes] = useState(["XS", "S", "M", "L", "XL", "XXL"]);
+  const [sizes] = useState(["S", "M", "L", "XL", "Taille unique"]); // Add this line
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showProductDetail, setShowProductDetail] = useState(null);

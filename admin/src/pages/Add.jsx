@@ -8,7 +8,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const Add = ({ token }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-  const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+  const SIZES = ["S", "M", "L", "XL", "Taille unique"]; // Ajouter les tailles
 
   const [formData, setFormData] = useState({
     name: "",
