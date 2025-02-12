@@ -40,7 +40,7 @@ export const LastestCollection = () => {
                   {item.name}
                 </h3>
                 <p className="text-gray-600 mt-2 text-xs sm:text-base">
-                  {item.price} €
+                  {item.price} DA
                 </p>
               </div>
               <button
