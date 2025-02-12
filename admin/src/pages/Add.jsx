@@ -9,6 +9,7 @@ const Add = ({ token }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const SIZES = ["S", "M", "L", "XL", "Taille unique"]; // Ajouter les tailles
+  const RING_SIZES = ["54mm", "56mm"];
 
   const [formData, setFormData] = useState({
     name: "",
@@ -331,6 +332,29 @@ const Add = ({ token }) => {
                     {size}
                   </button>
                 ))}
+              </div>
+              {/* Ajouter la section des tailles de bagues */}
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tailles pour bagues uniquement
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {RING_SIZES.map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => handleSizeChange(size)}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors
+            ${
+              formData.sizes.includes(size)
+                ? "bg-rose-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

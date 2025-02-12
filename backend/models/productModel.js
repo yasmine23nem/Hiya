@@ -19,7 +19,7 @@ const productSchema = new mongoose.Schema({
     sizes: {
         type: [String],
         default: [],
-        enum: ['S', 'M', 'L', 'XL', 'Taille unique']
+        enum: ['S', 'M', 'L', 'XL', 'Taille unique', '54mm', '56mm']
     },
 });
 const productModel = mongoose.models.product || mongoose.model('product', productSchema);
