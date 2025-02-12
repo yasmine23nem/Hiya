@@ -27,6 +27,8 @@ export const Navbar = ({ hidden }) => {
   const navLinks = [
     { to: "/", label: "Accueil" },
     { to: "/collection", label: "Produits" },
+    { to: "/delivery", label: "Livraison" }, // Add this new link
+
     { to: "/about", label: "À propos" },
     { to: "/contact", label: "Contact" },
   ];

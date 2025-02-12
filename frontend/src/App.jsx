@@ -13,6 +13,7 @@ import { Footer } from "./components/Footer";
 import SearchBar from "./components/SearchBar";
 import { Orders } from "./pages/Orders";
 import { ToastContainer } from "react-toastify";
+import { Delivery } from "./components/Delivery";
 
 export const App = () => {
   const [hidden, setHidden] = useState(false);
@@ -49,6 +50,7 @@ export const App = () => {
         <Route path="/orders" element={<Orders />} />
         <Route path="/product/:productId" element={<Product />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/delivery" element={<Delivery />} />
       </Routes>
       <Footer />
     </div>
@@ -56,4 +58,3 @@ export const App = () => {
 };
 
 export default App;
-    
