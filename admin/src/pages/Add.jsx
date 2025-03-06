@@ -20,6 +20,17 @@ const Add = ({ token }) => {
     countInStock: "",
     sizes: [], // Ajouter le champ sizes
   });
+  // Add this new function to remove an image
+  const handleRemoveImage = (key) => {
+    setImages((prev) => ({
+      ...prev,
+      [key]: null,
+    }));
+    const fileInput = document.getElementById(key);
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  };
   // Ajouter la fonction de gestion des tailles
   const handleSizeChange = (size) => {
     setFormData((prev) => ({
@@ -209,11 +220,25 @@ const Add = ({ token }) => {
                 className="block cursor-pointer border-2 border-dashed border-gray-300 rounded-lg p-2"
               >
                 {images[key] ? (
-                  <img
-                    src={URL.createObjectURL(images[key])}
-                    alt={`Preview ${key}`}
-                    className="w-full h-32 object-cover rounded"
-                  />
+                  <div className="relative h-32">
+                    <img
+                      src={URL.createObjectURL(images[key])}
+                      alt={`Preview ${key}`}
+                      className="w-full h-32 object-cover rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleRemoveImage(key);
+                      }}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 focus:outline-none"
+                      aria-label="Supprimer l'image"
+                    >
+                      ×
+                    </button>
+                  </div>
                 ) : (
                   <div className="h-32 flex items-center justify-center bg-gray-50">
                     <span className="text-gray-500">+ Ajouter image</span>
