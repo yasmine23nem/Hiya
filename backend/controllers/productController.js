@@ -1,84 +1,73 @@
 import { cloudinaryInstance } from '../config/cloudinary.js';
 import Product from '../models/productModel.js';
-import productModel from '../models/productModel.js';
 import sharp from 'sharp';
+import fs from 'fs/promises';
 
-const optimizeImage = async (file) => {
+// Fonction pour optimiser l'image
+const optimizeImage = async (filePath) => {
     try {
-        const optimized = await sharp(file.path)
-            .resize(800, 800, { fit: 'inside' })
-            .jpeg({ quality: 80 })
+        const optimizedBuffer = await sharp(filePath)
+            .resize(800, 800, { fit: 'inside' }) // Redimensionne sans déformer
+            .toFormat('jpeg') // Convertit en JPEG
+            .jpeg({ quality: 80 }) // Réduit la taille
             .toBuffer();
-        return optimized;
+        return optimizedBuffer;
     } catch (error) {
         console.error('Image optimization error:', error);
-        throw error;
+        throw new Error('Image optimization failed');
     }
 };
 
-const uploadToCloudinary = async (file) => {
-    const optimized = await optimizeImage(file);
-    return new Promise((resolve, reject) => {
-        const uploadStream = cloudinaryInstance.uploader.upload_stream(
-            { folder: 'products' },
-            (error, result) => {
-                if (error) reject(error);
-                else resolve(result);
-            }
-        );
-        uploadStream.end(optimized);
-    });
+// Fonction pour uploader une image sur Cloudinary
+const uploadToCloudinary = async (filePath) => {
+    try {
+        const optimizedBuffer = await optimizeImage(filePath);
+
+        return new Promise((resolve, reject) => {
+            const uploadStream = cloudinaryInstance.uploader.upload_stream(
+                { folder: 'products' },
+                (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }
+            );
+            uploadStream.end(optimizedBuffer);
+        });
+    } catch (error) {
+        console.error('Cloudinary upload error:', error);
+        throw new Error('Cloudinary upload failed');
+    }
 };
 
+// Fonction pour créer un produit
 const createProduct = async (req, res) => {
     try {
         console.log('Starting product creation...');
-        console.log('Request body:', req.body);
-
         const { name, price, description, category, countInStock, bestseller, sizes } = req.body;
 
-        // Log validation checks
-        console.log('Validating required fields:', {
-            name: !!name,
-            price: !!price,
-            description: !!description,
-            category: !!category
-        });
-
+        // Vérification des champs obligatoires
         if (!name || !price || !description || !category) {
-            console.log('Missing required fields');
-            return res.status(400).json({
-                error: 'Missing required fields',
-                details: {
-                    name: !name ? 'Name is required' : null,
-                    price: !price ? 'Price is required' : null,
-                    description: !description ? 'Description is required' : null,
-                    category: !category ? 'Category is required' : null
-                }
-            });
+            return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        // Log image validation
-        console.log('Files received:', req.files);
-
-        if (!req.files || !req.files.image1) {
-            console.log('No images provided');
+        console.log('Validating images...');
+        if (!req.files || Object.keys(req.files).length === 0) {
             return res.status(400).json({ error: 'At least one image is required' });
         }
 
         const images = [];
-        if (req.files.image1) images.push(req.files.image1[0]);
-        if (req.files.image2) images.push(req.files.image2[0]);
-        if (req.files.image3) images.push(req.files.image3[0]);
+        ['image1', 'image2', 'image3'].forEach((key) => {
+            if (req.files[key] && req.files[key][0]) {
+                images.push(req.files[key][0].path);
+            }
+        });
 
-        console.log('Processing images:', images.length);
-
+        console.log(`Processing ${images.length} images...`);
         const cloudinaryResults = await Promise.all(images.map(uploadToCloudinary));
         const imageUrls = cloudinaryResults.map(result => result.secure_url);
-        console.log('Image URLs:', imageUrls);
 
         console.log('Creating product model...');
-        const product = new productModel({
+        const product = new Product({
             name,
             price: Number(price),
             description,
@@ -86,22 +75,25 @@ const createProduct = async (req, res) => {
             countInStock: Number(countInStock) || 10,
             image: imageUrls,
             bestseller: bestseller === 'true',
-            sizes: sizes ? JSON.parse(sizes) : [], // gestion des tailles
+            sizes: sizes ? JSON.parse(sizes) : [],
             active: true
         });
-        console.log('Product model created:', product);
 
-        console.log('Saving product to database...');
         await product.save();
         console.log('Product saved successfully');
+
+        // Suppression des fichiers temporaires
+        await Promise.all(images.map(filePath => fs.unlink(filePath)));
 
         res.status(201).json(product);
     } catch (error) {
         console.error('Create product error:', error);
-        console.error('Error stack:', error.stack);
         res.status(500).json({ error: error.message || 'Server error' });
     }
 };
+
+export { createProduct };
+
 
 const getProducts = async (req, res) => {
     try {
