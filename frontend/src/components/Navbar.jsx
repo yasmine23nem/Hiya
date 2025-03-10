@@ -8,6 +8,7 @@ import { Search, User, ShoppingCart, Menu, X } from "lucide-react";
 export const Navbar = ({ hidden }) => {
   const [visible, setVisible] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [blogDropdownVisible, setBlogDropdownVisible] = useState(false);
   const {
     setShowSearch,
     getCartCount,
@@ -27,8 +28,14 @@ export const Navbar = ({ hidden }) => {
   const navLinks = [
     { to: "/", label: "Accueil" },
     { to: "/collection", label: "Produits" },
-    { to: "/delivery", label: "Livraison" }, // Add this new link
-
+    { to: "/delivery", label: "Livraison" },
+    {
+      label: "Blog",
+      submenu: [
+        { to: "/blog", label: "Blog" },
+        { to: "/presentation", label: "Présentation" },
+      ],
+    },
     { to: "/about", label: "À propos" },
     { to: "/contact", label: "Contact" },
   ];
@@ -51,18 +58,49 @@ export const Navbar = ({ hidden }) => {
 
         <ul className="hidden md:flex space-x-8 items-center font-medium">
           {navLinks.map((link) => (
-            <li key={link.to}>
-              <NavLink
-                to={link.to}
-                className={({ isActive }) =>
-                  `relative group text-rose-600 transition-colors duration-300 ${
-                    isActive ? "font-semibold" : ""
-                  }`
-                }
-              >
-                {link.label}
-                <span className="absolute bottom-[-4px] left-0 h-0.5 bg-rose-600 transition-all duration-300 group-hover:w-full"></span>
-              </NavLink>
+            <li key={link.to || link.label} className="relative group">
+              {link.submenu ? (
+                <>
+                  <button
+                    onClick={() => setBlogDropdownVisible(!blogDropdownVisible)}
+                    className="relative group text-rose-600 transition-colors duration-300"
+                  >
+                    {link.label}
+                  </button>
+                  {blogDropdownVisible && (
+                    <ul className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md border border-gray-200">
+                      {link.submenu.map((sublink) => (
+                        <li key={sublink.to}>
+                          <NavLink
+                            to={sublink.to}
+                            className={({ isActive }) =>
+                              `block px-4 py-2 text-gray-700 hover:bg-gray-100 ${
+                                isActive
+                                  ? "bg-gray-100 text-rose-900"
+                                  : "hover:text-rose-600"
+                              }`
+                            }
+                          >
+                            {sublink.label}
+                          </NavLink>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : (
+                <NavLink
+                  to={link.to}
+                  className={({ isActive }) =>
+                    `relative group text-rose-600 transition-colors duration-300 ${
+                      isActive ? "font-semibold" : ""
+                    }`
+                  }
+                >
+                  {link.label}
+                  <span className="absolute bottom-[-4px] left-0 h-0.5 bg-rose-600 transition-all duration-300 group-hover:w-full"></span>
+                </NavLink>
+              )}
             </li>
           ))}
         </ul>
@@ -155,18 +193,53 @@ export const Navbar = ({ hidden }) => {
             <X className="w-6 h-6 mr-2" /> Fermer
           </button>
           {navLinks.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              onClick={() => setVisible(false)}
-              className={({ isActive }) =>
-                `block py-3 border-b border-gray-200 text-gray-700 hover:bg-gray-100 ${
-                  isActive ? "bg-gray-100 text-rose-900" : "hover:text-rose-600"
-                }`
-              }
-            >
-              {link.label}
-            </NavLink>
+            <div key={link.to || link.label}>
+              {link.submenu ? (
+                <>
+                  <button
+                    onClick={() => setBlogDropdownVisible(!blogDropdownVisible)}
+                    className="block py-3 border-b border-gray-200 text-gray-700 hover:bg-gray-100 w-full text-left"
+                  >
+                    {link.label}
+                  </button>
+                  {blogDropdownVisible && (
+                    <ul className="pl-4">
+                      {link.submenu.map((sublink) => (
+                        <li key={sublink.to}>
+                          <NavLink
+                            to={sublink.to}
+                            onClick={() => setVisible(false)}
+                            className={({ isActive }) =>
+                              `block py-3 border-b border-gray-200 text-gray-700 hover:bg-gray-100 ${
+                                isActive
+                                  ? "bg-gray-100 text-rose-900"
+                                  : "hover:text-rose-600"
+                              }`
+                            }
+                          >
+                            {sublink.label}
+                          </NavLink>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : (
+                <NavLink
+                  to={link.to}
+                  onClick={() => setVisible(false)}
+                  className={({ isActive }) =>
+                    `block py-3 border-b border-gray-200 text-gray-700 hover:bg-gray-100 ${
+                      isActive
+                        ? "bg-gray-100 text-rose-900"
+                        : "hover:text-rose-600"
+                    }`
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              )}
+            </div>
           ))}
         </div>
       </div>

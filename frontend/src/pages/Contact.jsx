@@ -4,7 +4,7 @@ export const Contact = () => {
   return (
     <div className="bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen py-20 px-4 sm:px-8 lg:px-16">
       {/* Title Section */}
-      <h2 className="text-4xl font-bold text-red-700 mb-12 text-center">
+      <h2 className="text-4xl font-bold text-black-700 mb-12 text-center">
         Contactez nous
       </h2>
 

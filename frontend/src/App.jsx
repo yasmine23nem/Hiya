@@ -14,6 +14,8 @@ import SearchBar from "./components/SearchBar";
 import { Orders } from "./pages/Orders";
 import { ToastContainer } from "react-toastify";
 import { Delivery } from "./components/Delivery";
+import BlogPost from "./pages/BlogPost.jsx";
+import Presentation from "./components/Presentation.jsx"; // Import the new Presentation component
 
 export const App = () => {
   const [hidden, setHidden] = useState(false);
@@ -47,6 +49,9 @@ export const App = () => {
         <Route path="/placeorder" element={<PlaceOrder />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/blog" element={<BlogPost />} />
+        <Route path="/presentation" element={<Presentation />} />{" "}
+        {/* Add the new route */}
         <Route path="/orders" element={<Orders />} />
         <Route path="/product/:productId" element={<Product />} />
         <Route path="/login" element={<Login />} />

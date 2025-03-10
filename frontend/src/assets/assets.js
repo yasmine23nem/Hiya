@@ -6,9 +6,14 @@ import menu from '../assets/menu.png'
 import dropdown from '../assets/dropdown.png'
 import echange from '../assets/echange.png'
 import cross from '../assets/cross.png'
+import lll from '../assets/lll.jpg'
+import mounia from '../assets/mounia.jpg'
+import photo1 from '../assets/photo1.jpg'
+import photo5 from '../assets/photo5.jpg'
 
+import c from '../assets/c.jpg'
 
-export const assets = { logo, search, cart, accournt, menu, dropdown, echange, cross }
+export const assets = { logo, search, cart, accournt, menu, dropdown, echange, cross, c, lll, mounia, photo1, photo5 }
 export const products = [
     {
         _id: '1bbb',
