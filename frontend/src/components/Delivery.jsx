@@ -88,7 +88,7 @@ const Delivery = () => {
         {/* Hero Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-black-700 mb-4">
-            Nos Tarifs de Livraison
+            Tarifs de Livraison
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Découvrez nos tarifs de livraison pour toutes les wilayas d'Algérie.
