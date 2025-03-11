@@ -85,7 +85,7 @@ export const Collection = () => {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row gap-6 pt-10 border-t border-gray-300">
+    <div className=" bg-[#faf7f5] flex flex-col sm:flex-row gap-6 pt-10 border-t border-gray-300">
       <div className="min-w-[250px]">
         <button
           onClick={() => setShowFilter(!showFilter)}
